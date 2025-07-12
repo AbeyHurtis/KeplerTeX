@@ -15,7 +15,7 @@
     "commands": [
       {
         "command": "keplertex.helloWorld",
-        "title": "Hello World"
+        "title": "Hello"
       }
     ]
   },
