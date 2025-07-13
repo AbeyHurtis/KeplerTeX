@@ -4,12 +4,14 @@
   "description": "online latex compiler",
   "version": "0.0.1",
   "engines": {
-    "vscode": "^1.102.0"
+    "vscode": "^1.100.0"
   },
   "categories": [
     "Other"
   ],
-  "activationEvents": [],
+  "activationEvents": [
+    "onLanguage:latex"
+  ],
   "main": "./out/extension.js",
   "contributes": {
     "commands": [
@@ -17,7 +19,14 @@
         "command": "keplertex.helloWorld",
         "title": "Hello"
       }
-    ]
+    ],
+    "languages": [
+    {
+      "id": "latex",
+      "extensions": [".tex"],
+      "aliases": ["LaTeX", "latex"]
+    }
+  ]
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
@@ -28,7 +37,7 @@
     "test": "vscode-test"
   },
   "devDependencies": {
-    "@types/vscode": "^1.102.0",
+    "@types/vscode": "^1.100.0",
     "@types/mocha": "^10.0.10",
     "@types/node": "20.x",
     "@typescript-eslint/eslint-plugin": "^8.31.1",
