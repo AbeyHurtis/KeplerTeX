@@ -36,8 +36,18 @@ async function sendToServer(texRaw: string, fileName: string){
 		//read buffer
 		const pdfBuffer = await response.buffer();
 		
-	// 	const tempLocation = vscode.Uri.joinPath(vscode.workspace.workspaceFolders?.[0]?.uri || vscode.Uri.file(require('os').tmpdir()),
-    //   'output.pdf').fsPath;
+		//Testing saved pdf
+
+		// Save PDF to temp location and open
+		const tempPath = vscode.Uri.joinPath(
+			vscode.workspace.workspaceFolders?.[0]?.uri || vscode.Uri.file(require('os').tmpdir()),
+			'output.pdf'
+		).fsPath;
+
+		require('fs').writeFileSync(tempPath, pdfBuffer);
+
+		vscode.window.showInformationMessage('PDF compiled successfully!');
+		vscode.env.openExternal(vscode.Uri.file(tempPath));
 
 	  //TODO : 
 	//    Open file within vscode ???
