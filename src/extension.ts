@@ -1,11 +1,42 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
+import * as dotenv from 'dotenv';
+dotenv.config();
+
 import * as vscode from 'vscode';
 import fetch from 'node-fetch';
 import FormData from 'form-data';
 import { Readable } from 'stream';
-import * as dotenv from 'dotenv';
-dotenv.config();
+
+
+function showPdfFromDataUri(base64Uri: string) {
+  const panel = vscode.window.createWebviewPanel(
+    'pdfPreview',
+    'Compiled PDF Preview',
+    vscode.ViewColumn.One,
+    {
+      enableScripts: true
+    }
+  );
+
+  panel.webview.html = getWebviewHtml(base64Uri);
+}
+
+function getWebviewHtml(pdfDataUri: string): string {
+  return `
+    <!DOCTYPE html>
+    <html lang="en">
+    <body style="margin:0;padding:0;overflow:hidden;">
+      <iframe 
+        src="${pdfDataUri}" 
+        type="application/pdf" 
+        style="width:100%; height:100vh;" 
+        frameborder="0">
+      </iframe>
+    </body>
+    </html>
+  `;
+}
 
 
 // Send raw text to texlive server 
@@ -20,12 +51,14 @@ async function sendToServer(texRaw: string, fileName: string){
 			contentType: 'application/x-tex'
 		});
 
-		const compileURL = process.env.COMPILE_URL;
+		// const compileURL = process.env.COMPILE_URL;
+		const compileURL = 'https://texlive-latest.onrender.com/compile';
 		const response = await fetch(compileURL||'', {
 			method: 'POST', 
 			body: form as any, 
 			headers: form.getHeaders()
 		})
+		// vscode.window.showInformationMessage(`${compileURL}`);
 
 		if(!response.ok){
 			const errorText = await response.text(); 
@@ -35,19 +68,26 @@ async function sendToServer(texRaw: string, fileName: string){
 
 		//read buffer
 		const pdfBuffer = await response.buffer();
-		
+
+		const base64Pdf = pdfBuffer.toString('base64');
+
+		const dataUri = `data:application/pdf;base64,${base64Pdf}`;
+
+		showPdfFromDataUri(dataUri);
+
+
 		//Testing saved pdf
 
-		// Save PDF to temp location and open
-		const tempPath = vscode.Uri.joinPath(
-			vscode.workspace.workspaceFolders?.[0]?.uri || vscode.Uri.file(require('os').tmpdir()),
-			'output.pdf'
-		).fsPath;
+		// // Save PDF to temp location and open
+		// const tempPath = vscode.Uri.joinPath(
+		// 	vscode.workspace.workspaceFolders?.[0]?.uri || vscode.Uri.file(require('os').tmpdir()),
+		// 	'output.pdf'
+		// ).fsPath;
 
-		require('fs').writeFileSync(tempPath, pdfBuffer);
+		// require('fs').writeFileSync(tempPath, pdfBuffer);
 
-		vscode.window.showInformationMessage('PDF compiled successfully!');
-		vscode.env.openExternal(vscode.Uri.file(tempPath));
+		// vscode.window.showInformationMessage('PDF compiled successfully!');
+		// vscode.env.openExternal(vscode.Uri.file(tempPath));
 
 	  //TODO : 
 	//    Open file within vscode ???
