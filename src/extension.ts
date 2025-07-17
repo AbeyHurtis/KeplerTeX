@@ -18,21 +18,22 @@ function showPdfFromDataUri(base64Uri: string) {
       enableScripts: true
     }
   );
-
+  vscode.window.showInformationMessage(`panel Created ..`)
   panel.webview.html = getWebviewHtml(base64Uri);
 }
 
-function getWebviewHtml(pdfDataUri: string): string {
+function getWebviewHtml(base64Pdf: string): string {
   return `
     <!DOCTYPE html>
     <html lang="en">
     <body style="margin:0;padding:0;overflow:hidden;">
       <iframe 
-        src="${pdfDataUri}" 
+        src="data:application/pdf;base64,${base64Pdf}"
         type="application/pdf" 
         style="width:100%; height:100vh;" 
         frameborder="0">
       </iframe>
+	  Test
     </body>
     </html>
   `;
@@ -46,6 +47,7 @@ async function sendToServer(texRaw: string, fileName: string){
 		const form = new FormData();
 
 		const latexStream = Readable.from(texRaw);
+
 		form.append('tex_file', latexStream, { 
 			filename: fileName || 'manuscript.tex',
 			contentType: 'application/x-tex'
@@ -58,8 +60,8 @@ async function sendToServer(texRaw: string, fileName: string){
 			body: form as any, 
 			headers: form.getHeaders()
 		})
-		// vscode.window.showInformationMessage(`${compileURL}`);
 
+		// vscode.window.showInformationMessage(`${compileURL}`);
 		if(!response.ok){
 			const errorText = await response.text(); 
 			vscode.window.showErrorMessage("Failed to Compile",errorText);
@@ -71,10 +73,13 @@ async function sendToServer(texRaw: string, fileName: string){
 
 		const base64Pdf = pdfBuffer.toString('base64');
 
-		const dataUri = `data:application/pdf;base64,${base64Pdf}`;
+		// const dataUri = `data:application/pdf;base64,${base64Pdf}`;
 
-		showPdfFromDataUri(dataUri);
+		// vscode.window.showInformationMessage(`${pdfBuffer}`);
+		// vscode.window.showInformationMessage(`${base64Pdf}`);
+		// vscode.window.showInformationMessage(`${dataUri}`);
 
+		showPdfFromDataUri(base64Pdf);
 
 		//Testing saved pdf
 
