@@ -7,37 +7,69 @@ import * as vscode from 'vscode';
 import fetch from 'node-fetch';
 import FormData from 'form-data';
 import { Readable } from 'stream';
+import * as fs from 'fs';
+import * as path from 'path'; 
 
 
-function showPdfFromDataUri(base64Uri: string) {
-  const panel = vscode.window.createWebviewPanel(
-    'pdfPreview',
-    'Compiled PDF Preview',
-    vscode.ViewColumn.One,
-    {
-      enableScripts: true
-    }
-  );
-  vscode.window.showInformationMessage(`panel Created ..`)
-  panel.webview.html = getWebviewHtml(base64Uri);
+
+async function showPdf(pdfBuffer: Buffer) {
+
+	const tempDir = vscode.Uri.joinPath(vscode.workspace.workspaceFolders?.[0].uri ?? vscode.Uri.file(__dirname), '.vscode', 'latex-cache');
+	await vscode.workspace.fs.createDirectory(tempDir);
+
+	const pdfPath = vscode.Uri.joinPath(tempDir, '_tmp.pdf'); 
+	await vscode.workspace.fs.writeFile(pdfPath, pdfBuffer)
+
+	const panel = vscode.window.createWebviewPanel(
+		'Preview', 
+		'PDF Preview', 
+		vscode.ViewColumn.One, 
+		{
+			enableScripts: true, 
+			localResourceRoots: [tempDir],
+		}
+	); 
+
+	const pdfWebViewUri = panel.webview.asWebviewUri(pdfPath); 
+
+	panel.webview.html= `
+		<!DOCTYPE html>
+		<html>
+			<body style="margin:0;padding:0">
+				<iframe src="${pdfWebViewUri}" style="width:100%; height:100vh;" frameborder="0">
+				</iframe>
+			</body>
+		</html>
+	`
+
+//   const panel = vscode.window.createWebviewPanel(
+//     'pdfPreview',
+//     'Compiled PDF Preview',
+//     vscode.ViewColumn.One,
+//     {
+//       enableScripts: true
+//     }
+//   );
+//   vscode.window.showInformationMessage(`panel Created ..`)
+//   panel.webview.html = getWebviewHtml(base64Uri);
 }
 
-function getWebviewHtml(base64Pdf: string): string {
-  return `
-    <!DOCTYPE html>
-    <html lang="en">
-    <body style="margin:0;padding:0;overflow:hidden;">
-      <iframe 
-        src="data:application/pdf;base64,${base64Pdf}"
-        type="application/pdf" 
-        style="width:100%; height:100vh;" 
-        frameborder="0">
-      </iframe>
-	  Test
-    </body>
-    </html>
-  `;
-}
+// function getWebviewHtml(base64Pdf: string): string {
+//   return `
+//     <!DOCTYPE html>
+//     <html lang="en">
+//     <body style="margin:0;padding:0;overflow:hidden;">
+//       <iframe 
+//         src="data:application/pdf;base64,${base64Pdf}"
+//         type="application/pdf" 
+//         style="width:100%; height:100vh;" 
+//         frameborder="0">
+//       </iframe>
+// 	  Test
+//     </body>
+//     </html>
+//   `;
+// }
 
 
 // Send raw text to texlive server 
@@ -71,7 +103,7 @@ async function sendToServer(texRaw: string, fileName: string){
 		//read buffer
 		const pdfBuffer = await response.buffer();
 
-		const base64Pdf = pdfBuffer.toString('base64');
+		// const base64Pdf = pdfBuffer.toString('base64');
 
 		// const dataUri = `data:application/pdf;base64,${base64Pdf}`;
 
@@ -79,7 +111,7 @@ async function sendToServer(texRaw: string, fileName: string){
 		// vscode.window.showInformationMessage(`${base64Pdf}`);
 		// vscode.window.showInformationMessage(`${dataUri}`);
 
-		showPdfFromDataUri(base64Pdf);
+		showPdf(pdfBuffer);
 
 		//Testing saved pdf
 
