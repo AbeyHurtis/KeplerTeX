@@ -42,6 +42,13 @@ async function showPdf(pdfBuffer: Buffer) {
 		</html>
 	`
 
+	const panel2 = vscode.window.createWebviewPanel('pdfPreviewDebugger', 
+		'Debugging console', 
+		vscode.ViewColumn.Two, {
+			enableScripts: true
+		}
+	);
+
 //   const panel = vscode.window.createWebviewPanel(
 //     'pdfPreview',
 //     'Compiled PDF Preview',
