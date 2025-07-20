@@ -20,27 +20,27 @@ async function showPdf(pdfBuffer: Buffer) {
 	const pdfPath = vscode.Uri.joinPath(tempDir, '_tmp.pdf'); 
 	await vscode.workspace.fs.writeFile(pdfPath, pdfBuffer)
 
-	const panel = vscode.window.createWebviewPanel(
-		'Preview', 
-		'PDF Preview', 
-		vscode.ViewColumn.One, 
-		{
-			enableScripts: true, 
-			localResourceRoots: [tempDir],
-		}
-	); 
+	// const panel = vscode.window.createWebviewPanel(
+	// 	'Preview', 
+	// 	'PDF Preview', 
+	// 	vscode.ViewColumn.One, 
+	// 	{
+	// 		enableScripts: true, 
+	// 		localResourceRoots: [tempDir],
+	// 	}
+	// ); 
 
-	const pdfWebViewUri = panel.webview.asWebviewUri(pdfPath); 
+	// const pdfWebViewUri = panel.webview.asWebviewUri(pdfPath); 
 
-	panel.webview.html= `
-		<!DOCTYPE html>
-		<html>
-			<body style="margin:0;padding:0">
-				<iframe src="${pdfWebViewUri}" style="width:100%; height:100vh;" frameborder="0">
-				</iframe>
-			</body>
-		</html>
-	`
+	// panel.webview.html= `
+	// 	<!DOCTYPE html>
+	// 	<html>
+	// 		<body style="margin:0;padding:0">
+	// 			<iframe src="${pdfWebViewUri}" style="width:100%; height:100vh;" frameborder="0">
+	// 			</iframe>
+	// 		</body>
+	// 	</html>
+	// `
 
 	const panel2 = vscode.window.createWebviewPanel('pdfPreviewDebugger', 
 		'Debugging console', 
@@ -48,6 +48,19 @@ async function showPdf(pdfBuffer: Buffer) {
 			enableScripts: true
 		}
 	);
+
+	const testpath = vscode.Uri.file('./test.pdf');
+	const pdfWebViewUri2 = panel.webview.asWebviewUri(testpath);
+
+	panel2.webview.html = `
+	<!DOCTYPE html>
+		<html>
+			<body style="margin:0;padding:0">
+				<iframe src="${pdfWebViewUri2}" style="width:100%; height:100vh;" frameborder="0">
+				</iframe>
+			</body>
+		</html>
+	`
 
 //   const panel = vscode.window.createWebviewPanel(
 //     'pdfPreview',
