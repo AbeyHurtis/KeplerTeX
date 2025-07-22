@@ -20,6 +20,7 @@ async function showPdf(pdfBuffer: Buffer) {
 	const pdfPath = vscode.Uri.joinPath(tempDir, '_tmp.pdf'); 
 	await vscode.workspace.fs.writeFile(pdfPath, pdfBuffer)
 
+
 	// const panel = vscode.window.createWebviewPanel(
 	// 	'Preview', 
 	// 	'PDF Preview', 
@@ -46,24 +47,35 @@ async function showPdf(pdfBuffer: Buffer) {
 		'Debugging console', 
 		vscode.ViewColumn.Two, {
 			enableScripts: true,
-			localResourceRoots: [tempDir],
+			localResourceRoots: [vscode.Uri.file(path.join(context.extensionPath, 'media'))],
 		}
 	);
 
-	const testpath = vscode.Uri.file('./test.pdf');
+	
+	const testpath = vscode.Uri.file(path.join(__dirname, './download.pdf'));
+	
+	const htmlPath = path.join(context.extensionPath, 'media', 'viewer.html');
+	let html = fs.readFileSync(htmlPath, 'utf8');
+
+
 	const pdfWebViewUri2 = panel2.webview.asWebviewUri(testpath);
 
-	panel2.webview.html = `
-	<!DOCTYPE html>
-<html>
+	html = html.replace('{{PDF_URI}}', testpath.toString());
 
-<body style="margin:0;padding:0">
-	<iframe src="./download.pdf" style="width:100vw; height:100vh;" frameborder="0">
-	</iframe>
-</body>
+	panel2.webview.html = html;
 
-</html>
-	`
+
+// 	panel2.webview.html = `
+// 	<!DOCTYPE html>
+// <html>
+
+// <body style="margin:0;padding:0">
+// 	<iframe src="./download.pdf" style="width:100vw; height:100vh;" frameborder="0">
+// 	</iframe>
+// </body>
+
+// </html>
+// 	`
 
 //   const panel = vscode.window.createWebviewPanel(
 //     'pdfPreview',
