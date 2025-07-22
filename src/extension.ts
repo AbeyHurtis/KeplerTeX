@@ -45,21 +45,24 @@ async function showPdf(pdfBuffer: Buffer) {
 	const panel2 = vscode.window.createWebviewPanel('pdfPreviewDebugger', 
 		'Debugging console', 
 		vscode.ViewColumn.Two, {
-			enableScripts: true
+			enableScripts: true,
+			localResourceRoots: [tempDir],
 		}
 	);
 
 	const testpath = vscode.Uri.file('./test.pdf');
-	const pdfWebViewUri2 = panel.webview.asWebviewUri(testpath);
+	const pdfWebViewUri2 = panel2.webview.asWebviewUri(testpath);
 
 	panel2.webview.html = `
 	<!DOCTYPE html>
-		<html>
-			<body style="margin:0;padding:0">
-				<iframe src="${pdfWebViewUri2}" style="width:100%; height:100vh;" frameborder="0">
-				</iframe>
-			</body>
-		</html>
+<html>
+
+<body style="margin:0;padding:0">
+	<iframe src="./download.pdf" style="width:100vw; height:100vh;" frameborder="0">
+	</iframe>
+</body>
+
+</html>
 	`
 
 //   const panel = vscode.window.createWebviewPanel(
