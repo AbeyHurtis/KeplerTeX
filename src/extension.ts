@@ -146,7 +146,7 @@ async function sendToServer(texRaw: string, fileName: string){
 		// vscode.window.showInformationMessage(`${base64Pdf}`);
 		// vscode.window.showInformationMessage(`${dataUri}`);
 
-		showPdf(pdfBuffer);
+		// showPdf(pdfBuffer);
 
 		//Testing saved pdf
 
@@ -190,7 +190,31 @@ export function activate(context: vscode.ExtensionContext) {
 	vscode.workspace.onDidSaveTextDocument((document) => {
 		if(document.languageId == 'latex' || document.fileName.endsWith('.tex')){
 			const texRaw = document.getText();
-			sendToServer(texRaw, document.fileName);
+			// sendToServer(texRaw, document.fileName);
+
+			
+		const panel2 = vscode.window.createWebviewPanel('pdfPreviewDebugger', 
+			'Debugging console', 
+			vscode.ViewColumn.Two, {
+				enableScripts: true,
+				localResourceRoots: [vscode.Uri.file(path.join(context.extensionPath, 'media'))],
+			}
+		);
+
+		
+		const testpath = vscode.Uri.file(path.join(__dirname, 'download.pdf'));
+		vscode.window.showInformationMessage(`${testpath}`);
+
+		const htmlPath = path.join(context.extensionPath, 'media', 'viewer.html');
+		let html = fs.readFileSync(htmlPath, 'utf8');
+
+
+		const pdfWebViewUri2 = panel2.webview.asWebviewUri(testpath);
+
+		html = html.replace('{{PDF_URI}}', testpath.toString());
+
+		panel2.webview.html = html;
+
 		}
 	})
 
