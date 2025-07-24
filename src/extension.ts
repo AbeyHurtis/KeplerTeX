@@ -20,29 +20,6 @@ async function showPdf(pdfBuffer: Buffer) {
 	const pdfPath = vscode.Uri.joinPath(tempDir, '_tmp.pdf'); 
 	await vscode.workspace.fs.writeFile(pdfPath, pdfBuffer)
 
-
-	// const panel = vscode.window.createWebviewPanel(
-	// 	'Preview', 
-	// 	'PDF Preview', 
-	// 	vscode.ViewColumn.One, 
-	// 	{
-	// 		enableScripts: true, 
-	// 		localResourceRoots: [tempDir],
-	// 	}
-	// ); 
-
-	// const pdfWebViewUri = panel.webview.asWebviewUri(pdfPath); 
-
-	// panel.webview.html= `
-	// 	<!DOCTYPE html>
-	// 	<html>
-	// 		<body style="margin:0;padding:0">
-	// 			<iframe src="${pdfWebViewUri}" style="width:100%; height:100vh;" frameborder="0">
-	// 			</iframe>
-	// 		</body>
-	// 	</html>
-	// `
-
 	const panel2 = vscode.window.createWebviewPanel('pdfPreviewDebugger', 
 		'Debugging console', 
 		vscode.ViewColumn.Two, {
@@ -64,29 +41,6 @@ async function showPdf(pdfBuffer: Buffer) {
 
 	panel2.webview.html = html;
 
-
-// 	panel2.webview.html = `
-// 	<!DOCTYPE html>
-// <html>
-
-// <body style="margin:0;padding:0">
-// 	<iframe src="./download.pdf" style="width:100vw; height:100vh;" frameborder="0">
-// 	</iframe>
-// </body>
-
-// </html>
-// 	`
-
-//   const panel = vscode.window.createWebviewPanel(
-//     'pdfPreview',
-//     'Compiled PDF Preview',
-//     vscode.ViewColumn.One,
-//     {
-//       enableScripts: true
-//     }
-//   );
-//   vscode.window.showInformationMessage(`panel Created ..`)
-//   panel.webview.html = getWebviewHtml(base64Uri);
 }
 
 // function getWebviewHtml(base64Pdf: string): string {
@@ -137,16 +91,6 @@ async function sendToServer(texRaw: string, fileName: string){
 
 		//read buffer
 		const pdfBuffer = await response.buffer();
-
-		// const base64Pdf = pdfBuffer.toString('base64');
-
-		// const dataUri = `data:application/pdf;base64,${base64Pdf}`;
-
-		// vscode.window.showInformationMessage(`${pdfBuffer}`);
-		// vscode.window.showInformationMessage(`${base64Pdf}`);
-		// vscode.window.showInformationMessage(`${dataUri}`);
-
-		// showPdf(pdfBuffer);
 
 		//Testing saved pdf
 
