@@ -8,40 +8,8 @@ import fetch from 'node-fetch';
 import FormData from 'form-data';
 import { Readable } from 'stream';
 import * as fs from 'fs';
-import * as path from 'path'; 
+import * as path from 'path';
 
-
-
-async function showPdf(pdfBuffer: Buffer) {
-
-	const tempDir = vscode.Uri.joinPath(vscode.workspace.workspaceFolders?.[0].uri ?? vscode.Uri.file(__dirname), '.vscode', 'latex-cache');
-	await vscode.workspace.fs.createDirectory(tempDir);
-
-	const pdfPath = vscode.Uri.joinPath(tempDir, '_tmp.pdf'); 
-	await vscode.workspace.fs.writeFile(pdfPath, pdfBuffer)
-
-	const panel2 = vscode.window.createWebviewPanel('pdfPreviewDebugger', 
-		'Debugging console', 
-		vscode.ViewColumn.Two, {
-			enableScripts: true,
-			localResourceRoots: [vscode.Uri.file(path.join(context.extensionPath, 'media'))],
-		}
-	);
-
-	
-	const testpath = vscode.Uri.file(path.join(__dirname, './download.pdf'));
-	
-	const htmlPath = path.join(context.extensionPath, 'media', 'viewer.html');
-	let html = fs.readFileSync(htmlPath, 'utf8');
-
-
-	const pdfWebViewUri2 = panel2.webview.asWebviewUri(testpath);
-
-	html = html.replace('{{PDF_URI}}', testpath.toString());
-
-	panel2.webview.html = html;
-
-}
 
 // function getWebviewHtml(base64Pdf: string): string {
 //   return `
@@ -62,31 +30,31 @@ async function showPdf(pdfBuffer: Buffer) {
 
 
 // Send raw text to texlive server 
-async function sendToServer(texRaw: string, fileName: string){
+async function sendToServer(texRaw: string, fileName: string) {
 	//TODO
-	try{
+	try {
 		const form = new FormData();
 
 		const latexStream = Readable.from(texRaw);
 
-		form.append('tex_file', latexStream, { 
+		form.append('tex_file', latexStream, {
 			filename: fileName || 'manuscript.tex',
 			contentType: 'application/x-tex'
 		});
 
 		// const compileURL = process.env.COMPILE_URL;
 		const compileURL = 'https://texlive-latest.onrender.com/compile';
-		const response = await fetch(compileURL||'', {
-			method: 'POST', 
-			body: form as any, 
+		const response = await fetch(compileURL || '', {
+			method: 'POST',
+			body: form as any,
 			headers: form.getHeaders()
 		})
 
 		// vscode.window.showInformationMessage(`${compileURL}`);
-		if(!response.ok){
-			const errorText = await response.text(); 
-			vscode.window.showErrorMessage("Failed to Compile",errorText);
-			return; 
+		if (!response.ok) {
+			const errorText = await response.text();
+			vscode.window.showErrorMessage("Failed to Compile", errorText);
+			return;
 		}
 
 		//read buffer
@@ -105,11 +73,11 @@ async function sendToServer(texRaw: string, fileName: string){
 		// vscode.window.showInformationMessage('PDF compiled successfully!');
 		// vscode.env.openExternal(vscode.Uri.file(tempPath));
 
-	  //TODO : 
-	//    Open file within vscode ???
-		
+		//TODO : 
+		//    Open file within vscode ???
+
 	}
-	catch(error: any) { 
+	catch (error: any) {
 		vscode.window.showErrorMessage("Failed to connect: ", error.message);
 	}
 }
@@ -132,32 +100,46 @@ export function activate(context: vscode.ExtensionContext) {
 	});
 
 	vscode.workspace.onDidSaveTextDocument((document) => {
-		if(document.languageId == 'latex' || document.fileName.endsWith('.tex')){
+		if (document.languageId == 'latex' || document.fileName.endsWith('.tex')) {
 			const texRaw = document.getText();
 			// sendToServer(texRaw, document.fileName);
 
-			
-		const panel2 = vscode.window.createWebviewPanel('pdfPreviewDebugger', 
-			'Debugging console', 
-			vscode.ViewColumn.Two, {
+
+			const panel2 = vscode.window.createWebviewPanel('pdfPreviewDebugger',
+				'Debugging console',
+				vscode.ViewColumn.Two, {
 				enableScripts: true,
 				localResourceRoots: [vscode.Uri.file(path.join(context.extensionPath, 'media'))],
 			}
-		);
-
-		
-		const testpath = vscode.Uri.file(path.join(__dirname, 'download.pdf'));
-		vscode.window.showInformationMessage(`${testpath}`);
-
-		const htmlPath = path.join(context.extensionPath, 'media', 'viewer.html');
-		let html = fs.readFileSync(htmlPath, 'utf8');
+			);
 
 
-		const pdfWebViewUri2 = panel2.webview.asWebviewUri(testpath);
+			const testpath = vscode.Uri.file(path.join(__dirname, 'download.pdf'));
+			vscode.window.showInformationMessage(`${testpath}`);
 
-		html = html.replace('{{PDF_URI}}', testpath.toString());
+			const htmlPath = path.join(context.extensionPath, 'media', 'viewer.html');
+			let html = fs.readFileSync(htmlPath, 'utf8');
 
-		panel2.webview.html = html;
+
+			const pdfWebViewUri2 = panel2.webview.asWebviewUri(testpath);
+
+			// html = html.replace('{{PDF_URI}}', './download.pdf');
+
+			html=`<!DOCTYPE html>
+					<html lang="en">
+					<head>
+						<meta charset="UTF-8">
+						<meta name="viewport" content="width=device-width, initial-scale=1.0">
+						<title>Cat Coding</title>
+					</head>
+					<body>
+					Test
+						Test
+					</body>
+					</html>`
+
+
+			panel2.webview.html = html;
 
 		}
 	})
@@ -166,4 +148,4 @@ export function activate(context: vscode.ExtensionContext) {
 }
 
 // This method is called when your extension is deactivated
-export function deactivate() {}
+export function deactivate() { }
