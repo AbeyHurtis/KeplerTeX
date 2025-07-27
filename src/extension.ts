@@ -105,11 +105,11 @@ export function activate(context: vscode.ExtensionContext) {
 			// sendToServer(texRaw, document.fileName);
 
 
-			const panel2 = vscode.window.createWebviewPanel('pdfPreviewDebugger',
+			const panel = vscode.window.createWebviewPanel('pdfPreviewDebugger',
 				'Debugging console',
-				vscode.ViewColumn.Two, {
+				vscode.ViewColumn.One, {
 				enableScripts: true,
-				localResourceRoots: [vscode.Uri.file(path.join(context.extensionPath, 'media'))],
+				// localResourceRoots: [vscode.Uri.file(path.join(context.extensionPath, 'media'))],
 			}
 			);
 
@@ -121,7 +121,7 @@ export function activate(context: vscode.ExtensionContext) {
 			let html = fs.readFileSync(htmlPath, 'utf8');
 
 
-			const pdfWebViewUri2 = panel2.webview.asWebviewUri(testpath);
+			const pdfWebViewUri2 = panel.webview.asWebviewUri(testpath);
 
 			// html = html.replace('{{PDF_URI}}', './download.pdf');
 
@@ -134,12 +134,11 @@ export function activate(context: vscode.ExtensionContext) {
 					</head>
 					<body>
 					Test
-						Test
 					</body>
 					</html>`
 
 
-			panel2.webview.html = html;
+			panel.webview.html = html;
 
 		}
 	})
