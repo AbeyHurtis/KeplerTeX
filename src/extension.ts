@@ -133,7 +133,8 @@ export function activate(context: vscode.ExtensionContext) {
 						<title>Cat Coding</title>
 					</head>
 					<body>
-					Test
+					<iframe src="${pdfWebViewUri2}">
+					</iframe>
 					</body>
 					</html>`
 
