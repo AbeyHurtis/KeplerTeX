@@ -63,21 +63,7 @@ async function sendToServer(texRaw: string, fileName: string) {
 		//read buffer
 		const pdfBuffer = await response.buffer();
 
-		//Testing saved pdf
-
-		// // Save PDF to temp location and open
-		// const tempPath = vscode.Uri.joinPath(
-		// 	vscode.workspace.workspaceFolders?.[0]?.uri || vscode.Uri.file(require('os').tmpdir()),
-		// 	'output.pdf'
-		// ).fsPath;
-
-		// require('fs').writeFileSync(tempPath, pdfBuffer);
-
-		// vscode.window.showInformationMessage('PDF compiled successfully!');
-		// vscode.env.openExternal(vscode.Uri.file(tempPath));
-
-		//TODO : 
-		//    Open file within vscode ???
+		return pdfBuffer
 
 	}
 	catch (error: any) {
@@ -105,12 +91,11 @@ export function activate(context: vscode.ExtensionContext) {
 	vscode.workspace.onDidSaveTextDocument((document) => {
 		if (document.languageId == 'latex' || document.fileName.endsWith('.tex')) {
 			const texRaw = document.getText();
-			// sendToServer(texRaw, document.fileName);
-
+			// const pdfBufferReturn = sendToServer(texRaw, document.fileName);
 
 			const panel = vscode.window.createWebviewPanel('pdfPreviewDebugger',
 				'Debugging console',
-				vscode.ViewColumn.One, {
+				vscode.ViewColumn.Two, {
 				enableScripts: true,
 				// localResourceRoots: [vscode.Uri.file(path.join(context.extensionPath, 'media'))],
 			}
