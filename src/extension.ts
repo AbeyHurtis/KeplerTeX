@@ -15,11 +15,21 @@ function getWebviewHtml(base64Pdf: string): string {
   return `
     <!DOCTYPE html>
     <html lang="en">
-    <body style="margin:0;padding:0;overflow:hidden;">
-	<p>
-	  Test
-    </p>
-	  </body>
+      <head>
+        <meta charset="UTF-8">
+        <title>PDF Preview</title>
+        <style>
+          body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: sans-serif;
+          }
+        </style>
+      </head>
+      <body>
+        <p>Test</p>
+      </body>
     </html>
   `;
 }
@@ -105,15 +115,15 @@ export function activate(context: vscode.ExtensionContext) {
 			const testpath = vscode.Uri.file(path.join(__dirname, 'download.pdf'));
 			vscode.window.showInformationMessage(`${testpath}`);
 
-			const htmlPath = path.join(context.extensionPath, 'media', 'viewer.html');
-			let html = fs.readFileSync(htmlPath, 'utf8');
+			// const htmlPath = path.join(context.extensionPath, 'media', 'viewer.html');
+			// let html = fs.readFileSync(htmlPath, 'utf8');
 
 
 			const pdfWebViewUri2 = panel.webview.asWebviewUri(testpath);
 
 			// html = html.replace('{{PDF_URI}}', './download.pdf');
 
-			html=getWebviewHtml("test");
+			const html=getWebviewHtml("test");
 
 			panel.webview.html = html;
 
