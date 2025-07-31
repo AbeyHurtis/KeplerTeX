@@ -11,22 +11,25 @@ import * as fs from 'fs';
 import * as path from 'path';
 
 
-// function getWebviewHtml(base64Pdf: string): string {
-//   return `
-//     <!DOCTYPE html>
-//     <html lang="en">
-//     <body style="margin:0;padding:0;overflow:hidden;">
-//       <iframe 
+function getWebviewHtml(base64Pdf: string): string {
+  return `
+    <!DOCTYPE html>
+    <html lang="en">
+    <body style="margin:0;padding:0;overflow:hidden;">
+	<p>
+	  Test
+    </p>
+	  </body>
+    </html>
+  `;
+}
+
+// <iframe 
 //         src="data:application/pdf;base64,${base64Pdf}"
 //         type="application/pdf" 
 //         style="width:100%; height:100vh;" 
 //         frameborder="0">
 //       </iframe>
-// 	  Test
-//     </body>
-//     </html>
-//   `;
-// }
 
 
 // Send raw text to texlive server 
@@ -88,7 +91,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 	// Use the console to output diagnostic information (console.log) and errors (console.error)
 	// This line of code will only be executed once when your extension is activated
-	console.log('Congratulations, your extension "keplertex" is now active!');
+	// console.log('Congratulations, your extension "keplertex" is now active!');
 
 	// The command has been defined in the package.json file
 	// Now provide the implementation of the command with registerCommand
@@ -125,19 +128,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 			// html = html.replace('{{PDF_URI}}', './download.pdf');
 
-			html=`<!DOCTYPE html>
-					<html lang="en">
-					<head>
-						<meta charset="UTF-8">
-						<meta name="viewport" content="width=device-width, initial-scale=1.0">
-						<title>Cat Coding</title>
-					</head>
-					<body>
-					<iframe src="${pdfWebViewUri2}">
-					</iframe>
-					</body>
-					</html>`
-
+			html=getWebviewHtml("test");
 
 			panel.webview.html = html;
 
