@@ -9,6 +9,9 @@ import FormData from 'form-data';
 import { Readable } from 'stream';
 import * as fs from 'fs';
 import * as path from 'path';
+import { error } from 'console';
+
+
 
 
 function getWebviewHtml(base64Pdf: string): string {
@@ -112,20 +115,27 @@ export function activate(context: vscode.ExtensionContext) {
 			);
 
 
-			const testpath = vscode.Uri.file(path.join(__dirname, 'download.pdf'));
-			vscode.window.showInformationMessage(`${testpath}`);
+			const pdfPath = path.join(__dirname, 'download.pdf'); // adjust if needed
+
+			try {
+			const pdfBuffer = fs.readFileSync(pdfPath);
+			const base64Pdf = pdfBuffer.toString('base64'); // <-- Base64 encoded PDF
+
+			const html = getWebviewHtml(base64Pdf);
+			panel.webview.html = html;
+			} catch (err) {
+				const message = (err instanceof Error) ? err.message : String(err); 
+				vscode.window.showErrorMessage(`Failed to read PDF file: ${message}`);
+			}
+			vscode.window.showInformationMessage(`${pdfPath}`);
 
 			// const htmlPath = path.join(context.extensionPath, 'media', 'viewer.html');
 			// let html = fs.readFileSync(htmlPath, 'utf8');
 
 
-			const pdfWebViewUri2 = panel.webview.asWebviewUri(testpath);
+			// const pdfWebViewUri2 = panel.webview.asWebviewUri(testpath);
 
 			// html = html.replace('{{PDF_URI}}', './download.pdf');
-
-			const html=getWebviewHtml("test");
-
-			panel.webview.html = html;
 
 		}
 	})
