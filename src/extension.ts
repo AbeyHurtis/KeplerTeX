@@ -14,9 +14,10 @@ import { error } from 'console';
 
 
 
-function getWebviewHtml(base64Pdf: string): string {
-  return `
-    <!DOCTYPE html>
+function getWebviewHtml(pdfUri: vscode.Uri): string {
+
+	const head = `
+	<!DOCTYPE html>
     <html lang="en">
       <head>
         <meta charset="UTF-8">
@@ -28,13 +29,27 @@ function getWebviewHtml(base64Pdf: string): string {
             overflow: hidden;
             font-family: sans-serif;
           }
+		  embed {
+            width: 100%;
+            height: 100%;
+            border: none;
+          }
         </style>
       </head>
-      <body>
-        <p>Test</p>
+	`
+
+	const body = `
+	<body>
+		<embed 
+          src="${pdfUri}" 
+          type="application/pdf" />
       </body>
-    </html>
-  `;
+	`
+
+	const tail = `
+	</html>
+	`
+  return  head + body + tail;
 }
 
 // <iframe 
@@ -110,24 +125,32 @@ export function activate(context: vscode.ExtensionContext) {
 				'Debugging console',
 				vscode.ViewColumn.Two, {
 				enableScripts: true,
-				// localResourceRoots: [vscode.Uri.file(path.join(context.extensionPath, 'media'))],
+				localResourceRoots: [vscode.Uri.file(path.join(context.extensionPath, 'media'))],
 			}
 			);
 
 
-			const pdfPath = path.join(__dirname, 'download.pdf'); // adjust if needed
+			// const pdfPath = path.join(__dirname, 'download.pdf'); // adjust if needed
+			const pdfPath = path.join(context.extensionPath, 'media', 'download.pdf');
+			vscode.window.showInformationMessage(`${pdfPath}`);
+			
+			
+			// const pdfBuffer = fs.readFileSync(pdfPath);
+			// fs.writeFileSync(pdfPath, pdfBuffer);
 
 			try {
-			const pdfBuffer = fs.readFileSync(pdfPath);
-			const base64Pdf = pdfBuffer.toString('base64'); // <-- Base64 encoded PDF
+			// const pdfBuffer = fs.readFileSync(pdfPath);
+			// const base64Pdf = pdfBuffer.toString('base64'); // <-- Base64 encoded PDF
 
-			const html = getWebviewHtml(base64Pdf);
+			const pdfUri = vscode.Uri.file(pdfPath);
+			const pdfWebviewUri = panel.webview.asWebviewUri(pdfUri);
+
+			const html = getWebviewHtml(pdfWebviewUri);
 			panel.webview.html = html;
 			} catch (err) {
 				const message = (err instanceof Error) ? err.message : String(err); 
 				vscode.window.showErrorMessage(`Failed to read PDF file: ${message}`);
 			}
-			vscode.window.showInformationMessage(`${pdfPath}`);
 
 			// const htmlPath = path.join(context.extensionPath, 'media', 'viewer.html');
 			// let html = fs.readFileSync(htmlPath, 'utf8');
