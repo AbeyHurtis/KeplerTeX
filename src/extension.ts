@@ -143,18 +143,10 @@ export function activate(context: vscode.ExtensionContext) {
 				vscode.window.showErrorMessage(`Failed to read PDF file: ${message}`);
 			}
 
-			// const htmlPath = path.join(context.extensionPath, 'media', 'viewer.html');
-			// let html = fs.readFileSync(htmlPath, 'utf8');
-
-
-			// const pdfWebViewUri2 = panel.webview.asWebviewUri(testpath);
-
-			// html = html.replace('{{PDF_URI}}', './download.pdf');
-
 		}
 	})
 
-	context.subscriptions.push(disposable);
+	// context.subscriptions.push(disposable);
 }
 
 // This method is called when your extension is deactivated
