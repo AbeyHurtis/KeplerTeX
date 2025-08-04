@@ -52,14 +52,6 @@ function getWebviewHtml(pdfUri: vscode.Uri): string {
   return  head + body + tail;
 }
 
-// <iframe 
-//         src="data:application/pdf;base64,${base64Pdf}"
-//         type="application/pdf" 
-//         style="width:100%; height:100vh;" 
-//         frameborder="0">
-//       </iframe>
-
-
 // Send raw text to texlive server 
 async function sendToServer(texRaw: string, fileName: string) {
 	//TODO
