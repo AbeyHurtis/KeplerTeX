@@ -14,13 +14,13 @@ import { error } from 'console';
 
 
 
-function getWebviewHtml(pdfUri: vscode.Uri): string {
+function getWebViewHtml(pdfUri: vscode.Uri): string {
 
 	const head = `
 	<!DOCTYPE html>
     <html lang="en">
       <head>
-        <meta charset="UTF-8">
+        <meta http-equiv="Content-Security-Policy" content="default-src 'none'; charset="UTF-8">
         <title>PDF Preview</title>
         <style>
           body {
@@ -122,13 +122,11 @@ export function activate(context: vscode.ExtensionContext) {
 			// fs.writeFileSync(pdfPath, pdfBuffer);
 
 			try {
-			// const pdfBuffer = fs.readFileSync(pdfPath);
-			// const base64Pdf = pdfBuffer.toString('base64'); // <-- Base64 encoded PDF
 
 			const pdfUri = vscode.Uri.file(pdfPath);
 			const pdfWebviewUri = panel.webview.asWebviewUri(pdfUri);
 
-			const html = getWebviewHtml(pdfWebviewUri);
+			const html = getWebViewHtml(pdfWebviewUri);
 			panel.webview.html = html;
 			} catch (err) {
 				const message = (err instanceof Error) ? err.message : String(err); 
