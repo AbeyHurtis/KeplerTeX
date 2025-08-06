@@ -118,6 +118,8 @@ export function activate(context: vscode.ExtensionContext) {
 
 			// const pdfPath = path.join(__dirname, 'download.pdf'); // adjust if needed
 			const pdfPath = path.join(context.extensionPath, 'media', 'download.pdf');
+			const pdfPathUri = vscode.Uri.joinPath(extensUri, 'media', 'download.pdf');
+
 			vscode.window.showInformationMessage(`${pdfPath}`);
 			
 			
