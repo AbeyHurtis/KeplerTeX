@@ -11,6 +11,15 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { error } from 'console';
 
+function getNonce() {
+	let text = '';
+	const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+	for (let i = 0; i < 32; i++) {
+		text += possible.charAt(Math.floor(Math.random() * possible.length));
+	}
+	return text;
+}
+
 
 // Send raw text to texlive server 
 async function sendToServer(texRaw: string, fileName: string) {
@@ -125,18 +134,21 @@ function getWebviewHtml(
 	workerUri: vscode.Uri,
 	pdfFileUri: vscode.Uri
 ) {
+	const nonce = getNonce();
+
 	return `
     <!DOCTYPE html>
     <html>
     <head>
       <meta charset="UTF-8">
       <meta http-equiv="Content-Security-Policy"
-        content="default-src 'none'; script-src 'unsafe-inline' ${webview.cspSource}; style-src ${webview.cspSource}; img-src ${webview.cspSource};">
-      <title>PDF Preview</title>
-      <style>
-        body { margin: 0; padding: 0; }
-        canvas { display: block; margin: auto; }
-      </style>
+		content="default-src 'none'; script-src 'unsafe-inline' ${webview.cspSource};
+           style-src ${webview.cspSource} 'nonce-${nonce}'; img-src ${webview.cspSource};">
+
+	<style nonce="${nonce}">
+	body { margin: 0; padding: 0; }
+	canvas { display: block; margin: auto; }
+	</style>
     </head>
     <body>
       <canvas id="pdf-canvas"></canvas>
