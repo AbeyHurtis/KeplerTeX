@@ -142,8 +142,14 @@ function getWebviewHtml(
     <head>
       <meta charset="UTF-8">
       <meta http-equiv="Content-Security-Policy"
-		content="default-src 'none'; script-src 'unsafe-inline' ${webview.cspSource};
-           style-src ${webview.cspSource} 'nonce-${nonce}'; img-src ${webview.cspSource};">
+		content="default-src 'none';
+		connect-src ${webview.cspSource};
+		script-src 'unsafe-inline' ${webview.cspSource};
+		worker-src blob:;
+		style-src ${webview.cspSource} 'nonce-${nonce}';
+		img-src ${webview.cspSource};
+		font-src ${webview.cspSource};
+		">
 
 	<style nonce="${nonce}">
 	body { margin: 0; padding: 0; }
