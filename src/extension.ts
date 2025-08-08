@@ -92,11 +92,11 @@ export function activate(context: vscode.ExtensionContext) {
 			const webview = panel.webview;
 
 			const pdfJsUri = webview.asWebviewUri(
-				vscode.Uri.joinPath(context.extensionUri, 'lib', 'pdf.mjs')
+				vscode.Uri.joinPath(context.extensionUri, 'lib/pdfjs', 'pdf.mjs')
 			);
 
 			const workerUri = webview.asWebviewUri(
-				vscode.Uri.joinPath(context.extensionUri, 'lib', 'pdf.worker.mjs')
+				vscode.Uri.joinPath(context.extensionUri, 'lib/pdfjs', 'pdf.worker.mjs')
 			);
 
 			const htmlUri = webview.asWebviewUri(
@@ -165,7 +165,7 @@ function getWebviewHtml(
         const loadingTask = pdfjsLib.getDocument('${pdfFileUri}');
         loadingTask.promise.then(pdf => {
           pdf.getPage(1).then(page => {
-            const viewport = page.getViewport({ scale: 1.5 });
+            const viewport = page.getViewport({ scale: 8 });
             const canvas = document.getElementById('pdf-canvas');
             const ctx = canvas.getContext('2d');
             canvas.height = viewport.height;
