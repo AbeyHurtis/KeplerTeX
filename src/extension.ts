@@ -11,54 +11,6 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { error } from 'console';
 
-function getNonce() {
-	let text = '';
-	const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-	for (let i = 0; i < 32; i++) {
-		text += possible.charAt(Math.floor(Math.random() * possible.length));
-	}
-	return text;
-}
-
-
-// Send raw text to texlive server 
-async function sendToServer(texRaw: string, fileName: string) {
-	//TODO
-	try {
-		const form = new FormData();
-
-		const latexStream = Readable.from(texRaw);
-
-		form.append('tex_file', latexStream, {
-			filename: fileName || 'manuscript.tex',
-			contentType: 'application/x-tex'
-		});
-
-		// const compileURL = process.env.COMPILE_URL;
-		const compileURL = 'https://texlive-latest.onrender.com/compile';
-		const response = await fetch(compileURL || '', {
-			method: 'POST',
-			body: form as any,
-			headers: form.getHeaders()
-		})
-
-		// vscode.window.showInformationMessage(`${compileURL}`);
-		if (!response.ok) {
-			const errorText = await response.text();
-			vscode.window.showErrorMessage("Failed to Compile", errorText);
-			return;
-		}
-
-		//read buffer
-		const pdfBuffer = await response.buffer();
-
-		return pdfBuffer
-
-	}
-	catch (error: any) {
-		vscode.window.showErrorMessage("Failed to connect: ", error.message);
-	}
-}
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
@@ -74,107 +26,11 @@ export function activate(context: vscode.ExtensionContext) {
 		if (document.languageId == 'latex' || document.fileName.endsWith('.tex')) {
 			const texRaw = document.getText();
 			// const pdfBufferReturn = sendToServer(texRaw, document.fileName);
-
-			const pdfPath = path.join(context.extensionPath, 'lib', 'download.pdf');
-
-			const panel = vscode.window.createWebviewPanel(
-				'pdfPreview',
-				'PDF Preview',
-				vscode.ViewColumn.Two,
-				{
-					enableScripts: true,
-					localResourceRoots: [
-						vscode.Uri.joinPath(context.extensionUri, 'lib')
-					]
-				}
-			);
-
-			const webview = panel.webview;
-
-			const pdfJsUri = webview.asWebviewUri(
-				vscode.Uri.joinPath(context.extensionUri, 'lib/pdfjs', 'pdf.mjs')
-			);
-
-			const workerUri = webview.asWebviewUri(
-				vscode.Uri.joinPath(context.extensionUri, 'lib/pdfjs', 'pdf.worker.mjs')
-			);
-
-			const htmlUri = webview.asWebviewUri(
-				vscode.Uri.joinPath(context.extensionUri, 'lib', 'viewer.html')
-			);
-
-			const pdfFileUri = webview.asWebviewUri(
-				vscode.Uri.file(pdfPath)
-			);
-
-
-			// Set webview HTML
-			panel.webview.html = getWebviewHtml(webview, pdfJsUri, workerUri, pdfFileUri);
-
-			// const pdfPath = path.join(__dirname, 'download.pdf'); // adjust if needed
-
-			vscode.window.showInformationMessage(`${pdfPath}`);
-
-
-			// const pdfBuffer = fs.readFileSync(pdfPath);
-			// fs.writeFileSync(pdfPath, pdfBuffer);
 		}
 	})
-
-	// context.subscriptions.push(disposable);
 }
 
 // This method is called when your extension is deactivated
 export function deactivate() { }
 
 
-function getWebviewHtml(
-	webview: vscode.Webview,
-	pdfJsUri: vscode.Uri,
-	workerUri: vscode.Uri,
-	pdfFileUri: vscode.Uri
-) {
-	const nonce = getNonce();
-
-	return `
-    <!DOCTYPE html>
-    <html>
-    <head>
-      <meta charset="UTF-8">
-      <meta http-equiv="Content-Security-Policy"
-		content="default-src 'none';
-		connect-src ${webview.cspSource};
-		script-src 'unsafe-inline' ${webview.cspSource};
-		worker-src blob:;
-		style-src ${webview.cspSource} 'nonce-${nonce}';
-		img-src ${webview.cspSource};
-		font-src ${webview.cspSource};
-		">
-
-	<style nonce="${nonce}">
-	body { margin: 0; padding: 0; }
-	canvas { display: block; margin: auto; }
-	</style>
-    </head>
-    <body>
-      <canvas id="pdf-canvas"></canvas>
-      <script type="module">
-        import * as pdfjsLib from '${pdfJsUri}';
-        pdfjsLib.GlobalWorkerOptions.workerSrc = '${workerUri}';
-
-        const loadingTask = pdfjsLib.getDocument('${pdfFileUri}');
-        loadingTask.promise.then(pdf => {
-          pdf.getPage(1).then(page => {
-            const viewport = page.getViewport({ scale: 8 });
-            const canvas = document.getElementById('pdf-canvas');
-            const ctx = canvas.getContext('2d');
-            canvas.height = viewport.height;
-            canvas.width = viewport.width;
-            page.render({ canvasContext: ctx, viewport });
-          });
-        });
-      </script>
-    </body>
-    </html>
-  `;
-}
