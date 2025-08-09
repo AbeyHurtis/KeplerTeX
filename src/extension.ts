@@ -1,15 +1,8 @@
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
 import * as dotenv from 'dotenv';
-dotenv.config();
-
 import * as vscode from 'vscode';
-import fetch from 'node-fetch';
-import FormData from 'form-data';
-import { Readable } from 'stream';
-import * as fs from 'fs';
-import * as path from 'path';
-import { error } from 'console';
+
+
+dotenv.config();
 
 
 // This method is called when your extension is activated
