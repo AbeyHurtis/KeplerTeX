@@ -1,5 +1,7 @@
 import * as dotenv from 'dotenv';
 import * as vscode from 'vscode';
+import { renderPreview } from './preview';
+import { sendToServer } from './compilerService';
 
 
 dotenv.config();
@@ -19,6 +21,7 @@ export function activate(context: vscode.ExtensionContext) {
 		if (document.languageId == 'latex' || document.fileName.endsWith('.tex')) {
 			const texRaw = document.getText();
 			// const pdfBufferReturn = sendToServer(texRaw, document.fileName);
+			renderPreview(context); 
 		}
 	})
 }
