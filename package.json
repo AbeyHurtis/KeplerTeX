@@ -16,8 +16,15 @@
   "contributes": {
     "commands": [
       {
-        "command": "keplertex.helloWorld",
-        "title": "Hello"
+        "command": "keplertex.startRender",
+        "title": "Start Inital Rendering"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "keplertex.startRender",
+        "key": "cmd+k",
+        "when": "editorTextFocus"
       }
     ],
     "languages": [
