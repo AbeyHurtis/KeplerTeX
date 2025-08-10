@@ -12,7 +12,7 @@ function getNonce() {
 }
 
 
-export function previewRender(context: vscode.ExtensionContext){
+export function renderPreview(context: vscode.ExtensionContext){
     const panel = vscode.window.createWebviewPanel(
                     'pdfPreview',
                     'PDF Preview',
@@ -38,17 +38,16 @@ export function previewRender(context: vscode.ExtensionContext){
                     vscode.Uri.joinPath(context.extensionUri, 'lib/pdfjs', 'pdf.worker.mjs')
                 );
     
-                const htmlUri = webview.asWebviewUri(
-                    vscode.Uri.joinPath(context.extensionUri, 'lib', 'viewer.html')
-                );
-    
                 const pdfFileUri = webview.asWebviewUri(
                     vscode.Uri.file(pdfPath)
                 );
-    
+                
+                const renderScriptUri = webview.asWebviewUri( 
+                    vscode.Uri.joinPath( context.extensionUri, 'lib/renderjs', 'render.js')
+                );
     
                 // Set webview HTML
-                panel.webview.html = getWebviewHtml(webview, pdfJsUri, workerUri, pdfFileUri);
+                panel.webview.html = getWebviewHtml(webview, pdfJsUri, workerUri, pdfFileUri, renderScriptUri);
     
 }
 
@@ -57,7 +56,8 @@ function getWebviewHtml(
 	webview: vscode.Webview,
 	pdfJsUri: vscode.Uri,
 	workerUri: vscode.Uri,
-	pdfFileUri: vscode.Uri
+	pdfFileUri: vscode.Uri,
+    renderUri: vscode.Uri
 ) {
 	const nonce = getNonce();
 
@@ -82,23 +82,14 @@ function getWebviewHtml(
 	</style>
     </head>
     <body>
-      <canvas id="pdf-canvas"></canvas>
       <script type="module">
         import * as pdfjsLib from '${pdfJsUri}';
-        pdfjsLib.GlobalWorkerOptions.workerSrc = '${workerUri}';
+        window.pdfJsUri='${pdfJsUri}';
+        window.workerUri='${workerUri}';
+        window.pdfFileUri='${pdfFileUri}';
+        </script>
 
-        const loadingTask = pdfjsLib.getDocument('${pdfFileUri}');
-        loadingTask.promise.then(pdf => {
-          pdf.getPage(1).then(page => {
-            const viewport = page.getViewport({ scale: 1.5 });
-            const canvas = document.getElementById('pdf-canvas');
-            const ctx = canvas.getContext('2d');
-            canvas.height = viewport.height;
-            canvas.width = viewport.width;
-            page.render({ canvasContext: ctx, viewport });
-          });
-        });
-      </script>
+        <script type="module" src="${renderUri}"></script>
     </body>
     </html>
   `;
