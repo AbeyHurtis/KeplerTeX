@@ -14,7 +14,7 @@ function getNonce() {
 }
 
 
-export function renderPreview(context: vscode.ExtensionContext) {
+export function renderPreview(context: vscode.ExtensionContext,pdfBuffer?: Uint8Array | Buffer) {
     if (!panel) {
 
         panel = vscode.window.createWebviewPanel(
@@ -36,8 +36,7 @@ export function renderPreview(context: vscode.ExtensionContext) {
     }
 
 
-    const pdfPath = path.join(context.extensionPath, 'lib', 'tm2.pdf');
-
+    // const pdfPath = path.join(context.extensionPath, 'lib', 'tm2.pdf');
 
     const webview = panel.webview;
 
@@ -49,9 +48,9 @@ export function renderPreview(context: vscode.ExtensionContext) {
         vscode.Uri.joinPath(context.extensionUri, 'lib/pdfjs', 'pdf.worker.mjs')
     );
 
-    const pdfFileUri = webview.asWebviewUri(
-        vscode.Uri.file(pdfPath)
-    );
+    // const pdfFileUri = webview.asWebviewUri(
+    //     vscode.Uri.file(pdfPath)
+    // );
 
     const renderScriptUri = webview.asWebviewUri(
         vscode.Uri.joinPath(context.extensionUri, 'lib/renderjs', 'render.js')
@@ -62,7 +61,14 @@ export function renderPreview(context: vscode.ExtensionContext) {
     );
 
     // Set webview HTML
-    webview.html = getWebviewHtml(webview, pdfJsUri, workerUri, pdfFileUri, renderScriptUri, renderCSSUri);
+    // webview.html = getWebviewHtml(webview, pdfJsUri, workerUri, pdfFileUri, renderScriptUri, renderCSSUri);
+    webview.html = getWebviewHtml(webview, pdfJsUri, workerUri, renderScriptUri, renderCSSUri);
+
+    if (pdfBuffer) {
+        console.log("Pdf Buffer check")
+        const base64Pdf = Buffer.from(pdfBuffer).toString('base64');
+        panel.webview.postMessage({type: 'pdfData', data: base64Pdf});
+    }
 
 }
 
@@ -71,7 +77,7 @@ function getWebviewHtml(
     webview: vscode.Webview,
     pdfJsUri: vscode.Uri,
     workerUri: vscode.Uri,
-    pdfFileUri: vscode.Uri,
+    // pdfFileUri: vscode.Uri,
     renderUri: vscode.Uri,
     renderCSSUri: vscode.Uri
 ) {
@@ -101,7 +107,6 @@ function getWebviewHtml(
                 import * as pdfjsLib from '${pdfJsUri}';
                 window.pdfJsUri='${pdfJsUri}';
                 window.workerUri='${workerUri}';
-                window.pdfFileUri='${pdfFileUri}';
             </script>
 
             <script type="module" src="${renderUri}"></script>

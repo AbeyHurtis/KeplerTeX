@@ -17,19 +17,31 @@ export function activate(context: vscode.ExtensionContext) {
 	let initiated = false; 
 
 	//start Inital rendering. 
-	const startRenderCmd = vscode.commands.registerCommand('keplertex.startRender', () => {
-		renderPreview(context); 
+	const startRenderCmd = vscode.commands.registerCommand('keplertex.startRender', async () => {
+		
+		const editor = vscode.window.activeTextEditor;
+        if (!editor) {
+            vscode.window.showErrorMessage('No active editor found.');
+            return;
+        }
+
+        const document = editor.document;
+        const texRaw = document.getText();
+
+        const pdfBufferReturn = await sendToServer(texRaw, document.fileName);
+        renderPreview(context, pdfBufferReturn);
+
+		// renderPreview(context); 
 		initiated = true; 
 	})
 
 
-	vscode.workspace.onDidSaveTextDocument((document) => {
-
+	vscode.workspace.onDidSaveTextDocument(async (document) => {
 
 		if (initiated && (document.languageId == 'latex' || document.fileName.endsWith('.tex'))){
 			const texRaw = document.getText();
-			// const pdfBufferReturn = sendToServer(texRaw, document.fileName);
-			renderPreview(context); 
+			const pdfBufferReturn = await sendToServer(texRaw, document.fileName);
+			renderPreview(context, pdfBufferReturn); 
 		}
 	})
 }
