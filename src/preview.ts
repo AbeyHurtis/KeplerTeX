@@ -96,16 +96,17 @@ function getWebviewHtml(
 	<style nonce="${nonce}" src='${renderCSSUri}'>
 	</style>
     </head>
-    <body>
-      <script type="module">
-        import * as pdfjsLib from '${pdfJsUri}';
-        window.pdfJsUri='${pdfJsUri}';
-        window.workerUri='${workerUri}';
-        window.pdfFileUri='${pdfFileUri}';
-        </script>
+        <body>
+            <script type="module">
+                import * as pdfjsLib from '${pdfJsUri}';
+                window.pdfJsUri='${pdfJsUri}';
+                window.workerUri='${workerUri}';
+                window.pdfFileUri='${pdfFileUri}';
+            </script>
 
-        <script type="module" src="${renderUri}"></script>
-    </body>
+            <script type="module" src="${renderUri}"></script>
+            <button>
+        </body>
     </html>
   `;
 }
