@@ -1,6 +1,4 @@
 import * as vscode from 'vscode';
-import * as path from 'path';
-
 
 let panel: vscode.WebviewPanel | undefined;
 
@@ -31,8 +29,15 @@ export function renderPreview(context: vscode.ExtensionContext,pdfBuffer?: Uint8
         );
 
         panel.onDidDispose(() => {
-            panel = undefined;
-        })
+           panel = undefined;
+       })
+
+       panel.onDidChangeViewState(e => {
+            if (!e.webviewPanel.visible) {
+            panel?.webview.postMessage({type: 'clearZoomScale'});
+       }})
+
+
     }
 
 
@@ -65,7 +70,6 @@ export function renderPreview(context: vscode.ExtensionContext,pdfBuffer?: Uint8
     webview.html = getWebviewHtml(webview, pdfJsUri, workerUri, renderScriptUri, renderCSSUri);
 
     if (pdfBuffer) {
-        console.log("Pdf Buffer check")
         const base64Pdf = Buffer.from(pdfBuffer).toString('base64');
         panel.webview.postMessage({type: 'pdfData', data: base64Pdf});
     }

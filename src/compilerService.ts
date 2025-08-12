@@ -3,7 +3,8 @@ import FormData from 'form-data';
 import { Readable } from 'stream';
 import * as vscode from 'vscode';
 
-export async function sendToServer(texRaw: string, fileName: string): Promise<Buffer | undefined> {
+
+export async function sendToServer(texRaw: string, fileName: string, onProgress?: (percent: number) => void): Promise<Buffer | undefined> {
     try {
         const form = new FormData();
         const latexStream = Readable.from(texRaw);
