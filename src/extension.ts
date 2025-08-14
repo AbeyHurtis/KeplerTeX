@@ -1,81 +1,90 @@
 import * as vscode from 'vscode';
 import { renderPreview } from './preview';
 import { sendToServer } from './compilerService';
+import { checkLogin, promptLogin } from './loginService';
 
-// This method is called when your extension is activated
-// Your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
+    let initiated = false;
 
-	// Use the console to output diagnostic information (console.log) and errors (console.error)
-	// This line of code will only be executed once when your extension is activated
+    const startRenderCmd = vscode.commands.registerCommand('keplertex.startRender', async () => {
+        const editor = vscode.window.activeTextEditor;
+        if (!editor) {
+            vscode.window.showErrorMessage('No active editor found.');
+            return;
+        }
 
-	let initiated = false;
+        // Check if user is logged in
+        let loggedIn = await checkLogin(context);
+        if (!loggedIn) {
+            const token = await promptLogin(context);
+            if (!token) {
+                vscode.window.showErrorMessage('Login required to compile(registerCommand).');
+                return;
+            }
+            loggedIn = true;
+        }
 
-	//start Inital rendering. 
-	const startRenderCmd = vscode.commands.registerCommand('keplertex.startRender', async () => {
+        if (loggedIn) {
+            const document = editor.document;
+            const texRaw = document.getText();
 
-		const editor = vscode.window.activeTextEditor;
-		if (!editor) {
-			vscode.window.showErrorMessage('No active editor found.');
-			return;
-		}
+            vscode.window.withProgress({
+                location: vscode.ProgressLocation.Notification,
+                title: "Compiling",
+                cancellable: true
+            }, async (progress, token) => {
+                progress.report({ increment: 0 });
 
-		const document = editor.document;
-		const texRaw = document.getText();
+                if (token.isCancellationRequested) return;
 
-		vscode.window.withProgress({
-			location: vscode.ProgressLocation.Notification,
-			title: "Compiling",
-			cancellable: true
-		}, async (progress, token) => {
-			progress.report({ increment: 0, message: "Starting..." });
+                const pdfBufferReturn = await sendToServer(texRaw, document.fileName);
 
-			// Check token periodically to abort if user cancels
-			if (token.isCancellationRequested) {
-				return;
-			}
+                if (!token.isCancellationRequested) {
+                    renderPreview(context, pdfBufferReturn);
+                    progress.report({ increment: 100, message: "Done" });
+                }
+            });
 
-			const pdfBufferReturn = await sendToServer(texRaw, document.fileName);
+            initiated = true;
+        }
+    });
 
-			if (!token.isCancellationRequested) {
-				renderPreview(context, pdfBufferReturn);
-				progress.report({ increment: 100, message: "Done" });
-			}
-		})
+    vscode.workspace.onDidSaveTextDocument(async (document) => {
+        if (!initiated || (document.languageId !== 'latex' && !document.fileName.endsWith('.tex'))) return;
 
-		// renderPreview(context); 
-		initiated = true;
-	})
+        // Check login before compilation
+        let loggedIn = await checkLogin(context);
+        if (!loggedIn) {
+            const token = await promptLogin(context);
+            if (!token) {
+                vscode.window.showErrorMessage('Login required to compile(OnSave).');
+                return;
+            }
+            loggedIn = true;
+        }
 
+        if (loggedIn) {
+            const texRaw = document.getText();
+            vscode.window.withProgress({
+                location: vscode.ProgressLocation.Notification,
+                title: "Compiling",
+                cancellable: true
+            }, async (progress, token) => {
+                progress.report({ increment: 0 });
 
-	vscode.workspace.onDidSaveTextDocument(async (document) => {
+                if (token.isCancellationRequested) return;
 
-		if (initiated && (document.languageId == 'latex' || document.fileName.endsWith('.tex'))) {
-			const texRaw = document.getText();
-			vscode.window.withProgress({
-				location: vscode.ProgressLocation.Notification,
-				title: "Compiling",
-				cancellable: true
-			}, async (progress, token) => {
-				progress.report({ increment: 0, message: "Starting..." });
+                const pdfBufferReturn = await sendToServer(texRaw, document.fileName);
 
-				// Check token periodically to abort if user cancels
-				if (token.isCancellationRequested) {
-					return;
-				}
+                if (!token.isCancellationRequested) {
+                    renderPreview(context, pdfBufferReturn);
+                    progress.report({ increment: 100, message: "Done" });
+                }
+            });
+        }
+    });
 
-				const pdfBufferReturn = await sendToServer(texRaw, document.fileName);
-
-				if (!token.isCancellationRequested) {
-					renderPreview(context, pdfBufferReturn);
-					progress.report({ increment: 100, message: "Done" });
-				}
-			})
-		}
-	})
+    context.subscriptions.push(startRenderCmd);
 }
 
-// This method is called when your extension is deactivated
 export function deactivate() { }
-
-

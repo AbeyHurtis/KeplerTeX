@@ -14,7 +14,7 @@ export async function sendToServer(texRaw: string, fileName: string, onProgress?
             contentType: 'application/x-tex'
         });
 
-        const compileURL = 'https://texlive-latest.onrender.com/compile';
+        const compileURL = 'https://jnlyosvinbj4ebypmosfqgdvha0fkhzo.lambda-url.us-east-2.on.aws/compile';
         const response = await fetch(compileURL, {
             method: 'POST',
             body: form as any,
