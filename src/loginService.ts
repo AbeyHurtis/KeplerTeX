@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import fetch from 'node-fetch';
 
-const LAMBDA_BASE_URL = "https://jnlyosvinbj4ebypmosfqgdvha0fkhzo.lambda-url.us-east-2.on.aws/compile"; 
+const LAMBDA_BASE_URL = "https://jnlyosvinbj4ebypmosfqgdvha0fkhzo.lambda-url.us-east-2.on.aws"; 
 
 // -------------------- EMAIL/PASSWORD --------------------
 export async function emailSignup(email: string, password: string) {
@@ -28,24 +28,36 @@ export async function emailLogin(email: string, password: string) {
 
 // -------------------- GITHUB OAUTH --------------------
 export async function githubLoginOrSignup(context: vscode.ExtensionContext, isSignup: boolean = false) {
+    console.log("Github Signup ")
     const githubSession = await vscode.authentication.getSession('github', ['read:user', 'user:email'], { createIfNone: true });
     if (!githubSession) {
         vscode.window.showErrorMessage('GitHub authentication failed');
         return null;
     }
 
-    const code = githubSession.accessToken; // GitHub OAuth code/token
+    const code = githubSession.accessToken;
+    const path = '/login/github';
 
-    const path = isSignup ? '/signup/github' : '/login/github';
     const res = await fetch(`${LAMBDA_BASE_URL}${path}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ code })
     });
-
+    
     const data = await res.json();
+    
+    console.log("res : ", res); 
+    console.log("data : ", data); 
+    console.log("res.ok : ", res.ok); 
+    
     if (!res.ok) {
-        vscode.window.showErrorMessage(`GitHub ${isSignup ? 'signup' : 'login'} failed: ${data.error}`);
+        const path = '/signup/github'
+        const res = await fetch(`${LAMBDA_BASE_URL}${path}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ code })
+        });
+
         return null;
     }
 

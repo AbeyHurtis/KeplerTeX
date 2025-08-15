@@ -4,8 +4,9 @@ import { Readable } from 'stream';
 import * as vscode from 'vscode';
 
 
-export async function sendToServer(texRaw: string, fileName: string, onProgress?: (percent: number) => void): Promise<Buffer | undefined> {
+export async function sendToServer(context: vscode.ExtensionContext, texRaw: string, fileName: string, onProgress?: (percent: number) => void): Promise<Buffer | undefined> {
     try {
+        const token = await context.globalState.get<string>('authToken');
         const form = new FormData();
         const latexStream = Readable.from(texRaw);
 
@@ -14,11 +15,20 @@ export async function sendToServer(texRaw: string, fileName: string, onProgress?
             contentType: 'application/x-tex'
         });
 
+        const headers: Record<string, string> = {
+            ...form.getHeaders()
+        };
+
+        if (token) {
+            headers.Authorization = token;
+        }
+
+
         const compileURL = 'https://jnlyosvinbj4ebypmosfqgdvha0fkhzo.lambda-url.us-east-2.on.aws/compile';
         const response = await fetch(compileURL, {
             method: 'POST',
             body: form as any,
-            headers: form.getHeaders()
+            headers
         });
 
         if (!response.ok) {
