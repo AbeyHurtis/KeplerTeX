@@ -3,6 +3,25 @@ import { renderPreview } from './preview';
 import { sendToServer } from './compilerService';
 import { checkLogin, promptLogin } from './loginService';
 
+function renderWithProgress(context: vscode.ExtensionContext, document: vscode.TextDocument){
+	const texRaw = document.getText();
+			vscode.window.withProgress({
+				location: vscode.ProgressLocation.Notification,
+				title: "Compiling",
+				cancellable: true
+			}, async (progress, token) => {
+				progress.report({ increment: 0 });
+
+				if (token.isCancellationRequested) return;
+
+				const pdfBufferReturn = await sendToServer(context,texRaw, document.fileName);
+				if (!token.isCancellationRequested && pdfBufferReturn) {
+					renderPreview(context, pdfBufferReturn);
+					progress.report({ increment: 100, message: "Done" });
+				}
+			})
+}
+
 export function activate(context: vscode.ExtensionContext) {
 	let initiated = false;
 
@@ -13,14 +32,13 @@ export function activate(context: vscode.ExtensionContext) {
 				vscode.window.showErrorMessage('No active editor found.');
 				return;
 			}
-
 			// Check if user is logged in
 			let loggedIn = await checkLogin(context);
 
 			if (!loggedIn) {
 				const token = await promptLogin(context);
 				if (!token) {
-					vscode.window.showErrorMessage('Login required to compile(registerCommand).');
+					vscode.window.showErrorMessage('Login required to compile.');
 					return;
 				}
 				loggedIn = true;
@@ -28,24 +46,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 			if (loggedIn) {
 				const document = editor.document;
-				const texRaw = document.getText();
-
-				vscode.window.withProgress({
-					location: vscode.ProgressLocation.Notification,
-					title: "Compiling",
-					cancellable: true
-				}, async (progress, token) => {
-					progress.report({ increment: 0 });
-
-					if (token.isCancellationRequested) return;
-
-					const pdfBufferReturn = await sendToServer(context, texRaw, document.fileName);
-
-					if (!token.isCancellationRequested) {
-						renderPreview(context, pdfBufferReturn);
-						progress.report({ increment: 100, message: "Done" });
-					}
-				});
+				renderWithProgress(context, document); 
 
 				initiated = true;
 			}
@@ -67,23 +68,7 @@ export function activate(context: vscode.ExtensionContext) {
 		}
 
 		if (loggedIn) {
-
-			const texRaw = document.getText();
-			vscode.window.withProgress({
-				location: vscode.ProgressLocation.Notification,
-				title: "Compiling",
-				cancellable: true
-			}, async (progress, token) => {
-				progress.report({ increment: 0 });
-
-				if (token.isCancellationRequested) return;
-
-				const pdfBufferReturn = await sendToServer(context,texRaw, document.fileName);
-				if (!token.isCancellationRequested && pdfBufferReturn) {
-					renderPreview(context, pdfBufferReturn);
-					progress.report({ increment: 100, message: "Done" });
-				}
-			});
+				renderWithProgress(context, document); 
 		}
 	});
 
