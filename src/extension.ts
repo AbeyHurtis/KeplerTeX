@@ -16,7 +16,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 			// Check if user is logged in
 			let loggedIn = await checkLogin(context);
-			console.log("loggedIn : ", loggedIn);
+
 			if (!loggedIn) {
 				const token = await promptLogin(context);
 				if (!token) {
@@ -79,8 +79,7 @@ export function activate(context: vscode.ExtensionContext) {
 				if (token.isCancellationRequested) return;
 
 				const pdfBufferReturn = await sendToServer(context,texRaw, document.fileName);
-
-				if (!token.isCancellationRequested) {
+				if (!token.isCancellationRequested && pdfBufferReturn) {
 					renderPreview(context, pdfBufferReturn);
 					progress.report({ increment: 100, message: "Done" });
 				}

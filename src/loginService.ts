@@ -28,7 +28,7 @@ export async function emailLogin(email: string, password: string) {
 
 // -------------------- GITHUB OAUTH --------------------
 export async function githubLoginOrSignup(context: vscode.ExtensionContext, isSignup: boolean = false) {
-    console.log("Github Signup ")
+
     const githubSession = await vscode.authentication.getSession('github', ['read:user', 'user:email'], { createIfNone: true });
     if (!githubSession) {
         vscode.window.showErrorMessage('GitHub authentication failed');
@@ -45,10 +45,6 @@ export async function githubLoginOrSignup(context: vscode.ExtensionContext, isSi
     });
     
     const data = await res.json();
-    
-    console.log("res : ", res); 
-    console.log("data : ", data); 
-    console.log("res.ok : ", res.ok); 
     
     if (!res.ok) {
         const path = '/signup/github'
