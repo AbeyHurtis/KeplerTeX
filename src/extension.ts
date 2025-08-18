@@ -28,29 +28,30 @@ export function activate(context: vscode.ExtensionContext) {
 
 	const startRenderCmd = vscode.commands.registerCommand('keplertex.startRender', async () => {
 		if (!initiated) {
-			const editor = vscode.window.activeTextEditor;
-			if (!editor) {
-				vscode.window.showErrorMessage('No active editor found.');
-				return;
-			}
-			// Check if user is logged in
-			let loggedIn = await checkLogin(context);
+			renderLogin(context); 
+			// const editor = vscode.window.activeTextEditor;
+			// if (!editor) {
+			// 	vscode.window.showErrorMessage('No active editor found.');
+			// 	return;
+			// }
+			// // Check if user is logged in
+			// let loggedIn = await checkLogin(context);
 
-			if (!loggedIn) {
-				const token = await promptLogin(context);
-				if (!token) {
-					vscode.window.showErrorMessage('Login required to compile.');
-					return;
-				}
-				loggedIn = true;
-			}
+			// if (!loggedIn) {
+			// 	const token = await promptLogin(context);
+			// 	if (!token) {
+			// 		vscode.window.showErrorMessage('Login required to compile.');
+			// 		return;
+			// 	}
+			// 	loggedIn = true;
+			// }
 
-			if (loggedIn) {
-				const document = editor.document;
-				renderWithProgress(context, document); 
+			// if (loggedIn) {
+			// 	const document = editor.document;
+			// 	renderWithProgress(context, document); 
 
-				initiated = true;
-			}
+			// 	initiated = true;
+			// }
 		}
 	})
 

@@ -77,6 +77,7 @@ export function renderPreview(context: vscode.ExtensionContext,pdfBuffer?: Uint8
 }
 
 
+// <link rel="stylesheet" type="text/css" href="${renderCSSUri}">
 function getWebviewHtml(
     webview: vscode.Webview,
     pdfJsUri: vscode.Uri,
@@ -114,7 +115,6 @@ function getWebviewHtml(
             </script>
 
             <script type="module" src="${renderUri}"></script>
-            <button>
         </body>
     </html>
   `;

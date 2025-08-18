@@ -119,7 +119,7 @@ export function renderLogin(context: vscode.ExtensionContext){
     if(!panel){
         panel = vscode.window.createWebviewPanel(
             'LoginPreview', 
-            'Login Preview', 
+            'Login', 
             vscode.ViewColumn.Two,
             {
                 enableScripts: true, 
@@ -141,26 +141,67 @@ export function renderLogin(context: vscode.ExtensionContext){
         vscode.Uri.joinPath(context.extensionUri, 'lib/login', 'login.css')
      );
 
-     webview.html = getLoginHtml(webview, loginCSSUri); 
+     const logoUri = webview.asWebviewUri(
+        vscode.Uri.joinPath(context.extensionUri, 'lib/login', 'logo.png')
+     );
+
+     const githublogoUri = webview.asWebviewUri(
+        vscode.Uri.joinPath(context.extensionUri, 'lib/login', 'github.png')
+     );
+
+     const emailLogoUri = webview.asWebviewUri(
+        vscode.Uri.joinPath(context.extensionUri, 'lib/login', 'emailLogo.png')
+     );
+
+     webview.html = getLoginHtml(webview, loginCSSUri, logoUri, githublogoUri, emailLogoUri); 
 }
 
 function getLoginHtml(
     webview: vscode.Webview,
     loginCSSUri: vscode.Uri, 
+    logoUri: vscode.Uri,
+    githublogoUri: vscode.Uri,
+    emailLogoUri: vscode.Uri, 
 ){
-    const nouce = getNonce(); 
+    const nonce = getNonce(); 
     return `
         <!DOCTYPE html>
         <html>
-        <head>
-            <meta charstt="UTF-8">
-            <meta name="viewport" content="with=device-width, inital-scale=1.0">
-            <style nonce=${nouce} src=${loginCSSUri}><style> 
-        </head>
-        <body>
-            <button>Github Login</button> 
-            <button>Email & Password</button>
-        </body>
+            <head>
+                <meta charset="UTF-8">
+                <meta http-equiv="Content-Security-Policy"
+                content="default-src 'none';
+                connect-src ${webview.cspSource};
+                script-src 'unsafe-inline' ${webview.cspSource};
+                worker-src blob:;
+                style-src ${webview.cspSource} 'nonce-${nonce}';
+                img-src ${webview.cspSource};
+                font-src ${webview.cspSource};
+                ">
+                <meta name="viewport" content="with=device-width, inital-scale=1.0">
+                <link rel="stylesheet" type="text/css" href="${loginCSSUri}"> 
+            </head>
+            <body>
+                <div class="loginElements">
+                    <div class="loginCenter">
+
+                        <div class="logo">
+                            <img src="${logoUri}" height=200 width=200/>
+                        </div>
+
+                        <div class="buttonDiv">
+                            <button class="githubLoginButton"><img src="${githublogoUri}" /></button>
+                            <button class="emailLoginButton"><img src="${emailLogoUri}" /></button>
+                        </div>
+                        
+                        <div class="textFooter">
+                            Login / Sign Up 
+                        </div>
+
+                    </div>
+                    
+                </div>
+            </body>
         </html>
     `
 }
