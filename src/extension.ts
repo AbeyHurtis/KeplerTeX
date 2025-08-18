@@ -28,7 +28,11 @@ export function activate(context: vscode.ExtensionContext) {
 
 	const startRenderCmd = vscode.commands.registerCommand('keplertex.startRender', async () => {
 		if (!initiated) {
-			renderLogin(context); 
+			await context.globalState.update("authToken", undefined);
+			let loggedIn = await checkLogin(context); 
+			if(!loggedIn) {
+				renderLogin(context); 
+			}
 			// const editor = vscode.window.activeTextEditor;
 			// if (!editor) {
 			// 	vscode.window.showErrorMessage('No active editor found.');

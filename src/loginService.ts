@@ -10,7 +10,7 @@ function getNonce() {
     return text;
 }
 
-const LAMBDA_BASE_URL = "https://jnlyosvinbj4ebypmosfqgdvha0fkhzo.lambda-url.us-east-2.on.aws"; 
+const LAMBDA_BASE_URL = "https://jnlyosvinbj4ebypmosfqgdvha0fkhzo.lambda-url.us-east-2.on.aws";
 
 // -------------------- EMAIL/PASSWORD --------------------
 export async function emailSignup(email: string, password: string) {
@@ -38,7 +38,9 @@ export async function emailLogin(email: string, password: string) {
 // -------------------- GITHUB OAUTH --------------------
 export async function githubLoginOrSignup(context: vscode.ExtensionContext, isSignup: boolean = false) {
 
-    const githubSession = await vscode.authentication.getSession('github', ['read:user', 'user:email'], { createIfNone: true });
+    // const githubSession = await vscode.authentication.getSession('github', ['read:user', 'user:email'], { createIfNone: true });
+    const githubSession = await vscode.authentication.getSession("github", [], { forceNewSession: true });
+
     if (!githubSession) {
         vscode.window.showErrorMessage('GitHub authentication failed');
         return null;
@@ -52,9 +54,9 @@ export async function githubLoginOrSignup(context: vscode.ExtensionContext, isSi
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ code })
     });
-    
+
     const data = await res.json();
-    
+
     if (!res.ok) {
         const path = '/signup/github'
         const res = await fetch(`${LAMBDA_BASE_URL}${path}`, {
@@ -89,7 +91,7 @@ export async function checkLogin(context: vscode.ExtensionContext) {
 // -------------------- PROMPT FOR LOGIN --------------------
 export async function promptLogin(context: vscode.ExtensionContext) {
     const choice = await vscode.window.showQuickPick(
-        ['Email/Password', 'GitHub OAuth'], 
+        ['Email/Password', 'GitHub OAuth'],
         { placeHolder: 'Choose login method' }
     );
     if (!choice) return null;
@@ -115,15 +117,15 @@ export async function promptLogin(context: vscode.ExtensionContext) {
 
 let panel: vscode.WebviewPanel | undefined;
 
-export function renderLogin(context: vscode.ExtensionContext){
-    if(!panel){
+export function renderLogin(context: vscode.ExtensionContext) {
+    if (!panel) {
         panel = vscode.window.createWebviewPanel(
-            'LoginPreview', 
-            'Login', 
+            'LoginPreview',
+            'Login',
             vscode.ViewColumn.Two,
             {
-                enableScripts: true, 
-                retainContextWhenHidden: true, 
+                enableScripts: true,
+                retainContextWhenHidden: true,
                 localResourceRoots: [
                     vscode.Uri.joinPath(context.extensionUri, 'lib')
                 ]
@@ -131,39 +133,74 @@ export function renderLogin(context: vscode.ExtensionContext){
         );
 
         panel.onDidDispose(() => {
-            panel = undefined; 
+            panel = undefined;
         });
     }
 
-     const webview = panel.webview; 
+    const webview = panel.webview;
 
-     const loginCSSUri = webview.asWebviewUri(
+    const loginCSSUri = webview.asWebviewUri(
         vscode.Uri.joinPath(context.extensionUri, 'lib/login', 'login.css')
-     );
+    );
 
-     const logoUri = webview.asWebviewUri(
+    const logoUri = webview.asWebviewUri(
         vscode.Uri.joinPath(context.extensionUri, 'lib/login', 'logo.png')
-     );
+    );
 
-     const githublogoUri = webview.asWebviewUri(
+    const githublogoUri = webview.asWebviewUri(
         vscode.Uri.joinPath(context.extensionUri, 'lib/login', 'github.png')
-     );
+    );
 
-     const emailLogoUri = webview.asWebviewUri(
+    const emailLogoUri = webview.asWebviewUri(
         vscode.Uri.joinPath(context.extensionUri, 'lib/login', 'emailLogo.png')
-     );
+    );
 
-     webview.html = getLoginHtml(webview, loginCSSUri, logoUri, githublogoUri, emailLogoUri); 
+    const loginjsUri = webview.asWebviewUri(
+        vscode.Uri.joinPath(context.extensionUri, 'lib/login', 'login.js')
+    );
+
+    webview.html = getLoginHtml(webview, loginjsUri, loginCSSUri, logoUri, githublogoUri, emailLogoUri);
+
+    let token = undefined;
+
+    webview.onDidReceiveMessage(async message => {
+        switch (message.command) {
+            case 'githubLogin':
+                token = await githubLoginOrSignup(context);
+                break;
+
+            case 'submitEmailForm': {
+                const { username, email, password } = message.data;
+                try {
+                    // first signup, then login
+                    await emailSignup(email, password);
+                    token = await emailLogin(email, password);
+
+                    await context.globalState.update('authToken', token);
+                    vscode.window.showInformationMessage(`Logged in as ${username}`);
+                } catch (err: any) {
+                    vscode.window.showErrorMessage(err.message);
+                }
+                break;
+            }
+            case 'emailLogin':
+                // webview.html = 
+                console.log("testing");
+                break;
+        }
+    });
+
 }
 
 function getLoginHtml(
     webview: vscode.Webview,
-    loginCSSUri: vscode.Uri, 
+    loginjsUri: vscode.Uri,
+    loginCSSUri: vscode.Uri,
     logoUri: vscode.Uri,
     githublogoUri: vscode.Uri,
-    emailLogoUri: vscode.Uri, 
-){
-    const nonce = getNonce(); 
+    emailLogoUri: vscode.Uri,
+) {
+    const nonce = getNonce();
     return `
         <!DOCTYPE html>
         <html>
@@ -182,6 +219,7 @@ function getLoginHtml(
                 <link rel="stylesheet" type="text/css" href="${loginCSSUri}"> 
             </head>
             <body>
+                <script type="module" src="${loginjsUri}"> </script>
                 <div class="loginElements">
                     <div class="loginCenter">
 
@@ -194,6 +232,14 @@ function getLoginHtml(
                             <button class="emailLoginButton"><img src="${emailLogoUri}" /></button>
                         </div>
                         
+                        <div id="emailForm">
+                            <input type="text" id="username" placeholder="Username" />
+                            <input type="email" id="email" placeholder="Email" />
+                            <input type="password" id="password" placeholder="Password" />
+                            <input type="password" id="repassword" placeholder="Re-enter Password" />
+                            <button id="submitEmailForm">Submit</button>
+                        </div>
+
                         <div class="textFooter">
                             Login / Sign Up 
                         </div>
