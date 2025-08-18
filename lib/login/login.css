@@ -119,7 +119,7 @@ button:hover {
     color: white;
     font-size: 16px;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.9s ease;
 }
 
 #submitEmailForm:hover {
@@ -159,6 +159,8 @@ button:hover {
 }
 
 #backArrow:hover {
-    color: #000;
+    color: #dc9650;
     transform: translateX(-5px); /* subtle movement */
 }
+
+

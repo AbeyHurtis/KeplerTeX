@@ -25,37 +25,33 @@ function renderWithProgress(context: vscode.ExtensionContext, document: vscode.T
 
 export function activate(context: vscode.ExtensionContext) {
 	let initiated = false;
-
+	
 	const startRenderCmd = vscode.commands.registerCommand('keplertex.startRender', async () => {
+
 		if (!initiated) {
 			await context.globalState.update("authToken", undefined);
+			const editor = vscode.window.activeTextEditor;
+			if(!editor){
+				vscode.window.showErrorMessage('No Active editor found');
+				return;
+			}
+			const document = editor.document;
+			const token = undefined; 
+
+
 			let loggedIn = await checkLogin(context); 
 			if(!loggedIn) {
-				renderLogin(context); 
+				const token = await renderLogin(context);
+				loggedIn = true; 
+				if(token){
+					renderWithProgress(context, document);
+					initiated = true; 
+				}
+				if(!token){
+					vscode.window.showErrorMessage('Login required to start the compiler');
+					return; 
+				}
 			}
-			// const editor = vscode.window.activeTextEditor;
-			// if (!editor) {
-			// 	vscode.window.showErrorMessage('No active editor found.');
-			// 	return;
-			// }
-			// // Check if user is logged in
-			// let loggedIn = await checkLogin(context);
-
-			// if (!loggedIn) {
-			// 	const token = await promptLogin(context);
-			// 	if (!token) {
-			// 		vscode.window.showErrorMessage('Login required to compile.');
-			// 		return;
-			// 	}
-			// 	loggedIn = true;
-			// }
-
-			// if (loggedIn) {
-			// 	const document = editor.document;
-			// 	renderWithProgress(context, document); 
-
-			// 	initiated = true;
-			// }
 		}
 	})
 
@@ -67,7 +63,7 @@ export function activate(context: vscode.ExtensionContext) {
 		if (!loggedIn) {
 			const token = await promptLogin(context);
 			if (!token) {
-				vscode.window.showErrorMessage('Login required to compile(OnSave).');
+				vscode.window.showErrorMessage('Login required to compile.');
 				return;
 			}
 			loggedIn = true;

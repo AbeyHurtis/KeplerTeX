@@ -13,11 +13,11 @@ function getNonce() {
 const LAMBDA_BASE_URL = "https://jnlyosvinbj4ebypmosfqgdvha0fkhzo.lambda-url.us-east-2.on.aws";
 
 // -------------------- EMAIL/PASSWORD --------------------
-export async function emailSignup(email: string, password: string) {
+export async function emailSignup(username: string, email: string, password: string) {
     const res = await fetch(`${LAMBDA_BASE_URL}/signup`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password })
+        body: JSON.stringify({ username, email, password })
     });
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || 'Signup failed');
@@ -39,7 +39,7 @@ export async function emailLogin(email: string, password: string) {
 export async function githubLoginOrSignup(context: vscode.ExtensionContext, isSignup: boolean = false) {
 
     // const githubSession = await vscode.authentication.getSession('github', ['read:user', 'user:email'], { createIfNone: true });
-    const githubSession = await vscode.authentication.getSession("github", [], { forceNewSession: true });
+    const githubSession = await vscode.authentication.getSession("github", ['read:user', 'user:email'], { forceNewSession: true });
 
     if (!githubSession) {
         vscode.window.showErrorMessage('GitHub authentication failed');
@@ -117,78 +117,93 @@ export async function promptLogin(context: vscode.ExtensionContext) {
 
 let panel: vscode.WebviewPanel | undefined;
 
-export function renderLogin(context: vscode.ExtensionContext) {
-    if (!panel) {
-        panel = vscode.window.createWebviewPanel(
-            'LoginPreview',
-            'Login',
-            vscode.ViewColumn.Two,
-            {
-                enableScripts: true,
-                retainContextWhenHidden: true,
-                localResourceRoots: [
-                    vscode.Uri.joinPath(context.extensionUri, 'lib')
-                ]
-            }
+export function renderLogin(context: vscode.ExtensionContext): Promise<string | null>{
+
+    return new Promise((resolve) => {
+
+        if (!panel) {
+            panel = vscode.window.createWebviewPanel(
+                'LoginPreview',
+                'Login',
+                vscode.ViewColumn.Two,
+                {
+                    enableScripts: true,
+                    retainContextWhenHidden: true,
+                    localResourceRoots: [
+                        vscode.Uri.joinPath(context.extensionUri, 'lib')
+                    ],
+                }
+            );
+
+            panel.onDidDispose(() => {
+                panel = undefined;
+            });
+        }
+        const webview = panel.webview;
+
+        const loginCSSUri = webview.asWebviewUri(
+            vscode.Uri.joinPath(context.extensionUri, 'lib/login', 'login.css')
         );
 
-        panel.onDidDispose(() => {
-            panel = undefined;
-        });
-    }
+        const logoUri = webview.asWebviewUri(
+            vscode.Uri.joinPath(context.extensionUri, 'lib/login', 'logo.png')
+        );
 
-    const webview = panel.webview;
+        const githublogoUri = webview.asWebviewUri(
+            vscode.Uri.joinPath(context.extensionUri, 'lib/login', 'github.png')
+        );
 
-    const loginCSSUri = webview.asWebviewUri(
-        vscode.Uri.joinPath(context.extensionUri, 'lib/login', 'login.css')
-    );
+        const emailLogoUri = webview.asWebviewUri(
+            vscode.Uri.joinPath(context.extensionUri, 'lib/login', 'emailLogo.png')
+        );
 
-    const logoUri = webview.asWebviewUri(
-        vscode.Uri.joinPath(context.extensionUri, 'lib/login', 'logo.png')
-    );
+        const loginjsUri = webview.asWebviewUri(
+            vscode.Uri.joinPath(context.extensionUri, 'lib/login', 'login.js')
+        );
 
-    const githublogoUri = webview.asWebviewUri(
-        vscode.Uri.joinPath(context.extensionUri, 'lib/login', 'github.png')
-    );
+        webview.html = getLoginHtml(webview, loginjsUri, loginCSSUri, logoUri, githublogoUri, emailLogoUri);
 
-    const emailLogoUri = webview.asWebviewUri(
-        vscode.Uri.joinPath(context.extensionUri, 'lib/login', 'emailLogo.png')
-    );
+        let token = undefined;
 
-    const loginjsUri = webview.asWebviewUri(
-        vscode.Uri.joinPath(context.extensionUri, 'lib/login', 'login.js')
-    );
+        webview.onDidReceiveMessage(async message => {
+            switch (message.command) {
+                case 'githubLogin':
+                    token = await githubLoginOrSignup(context);
+                    if (token) {
+                            resolve(token);
+                            panel?.dispose();
+                        }
+                    break;
 
-    webview.html = getLoginHtml(webview, loginjsUri, loginCSSUri, logoUri, githublogoUri, emailLogoUri);
+                case 'submitEmailForm': {
+                    const { username, email, password } = message.data;
+                    try {
 
-    let token = undefined;
-
-    webview.onDidReceiveMessage(async message => {
-        switch (message.command) {
-            case 'githubLogin':
-                token = await githubLoginOrSignup(context);
-                break;
-
-            case 'submitEmailForm': {
-                const { username, email, password } = message.data;
-                try {
-                    // first signup, then login
-                    await emailSignup(email, password);
-                    token = await emailLogin(email, password);
-
-                    await context.globalState.update('authToken', token);
-                    vscode.window.showInformationMessage(`Logged in as ${username}`);
-                } catch (err: any) {
-                    vscode.window.showErrorMessage(err.message);
+                        await emailSignup(username, email, password);
+                        token = await emailLogin(email, password);
+                        if (token) {
+                            await context.globalState.update('authToken', token);
+                            vscode.window.showInformationMessage(`Logged in as ${username}`);
+                            resolve(token); 
+                            panel?.dispose();
+                        } else {
+                            vscode.window.showErrorMessage("Signup Failed!");
+                        }
+                    
+                    } catch (err: any) {
+                        vscode.window.showErrorMessage(err.message);
+                    }
+                    break;
                 }
-                break;
+                case 'emailLogin':
+                    // webview.html = 
+                    console.log("testing");
+                    break;
+                case 'wrongPassword':
+                    vscode.window.showErrorMessage("Passwords Does not match");
             }
-            case 'emailLogin':
-                // webview.html = 
-                console.log("testing");
-                break;
-        }
-    });
+        });
+    })
 
 }
 
