@@ -1,6 +1,15 @@
 import * as vscode from 'vscode';
 import fetch from 'node-fetch';
 
+function getNonce() {
+    let text = '';
+    const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    for (let i = 0; i < 32; i++) {
+        text += possible.charAt(Math.floor(Math.random() * possible.length));
+    }
+    return text;
+}
+
 const LAMBDA_BASE_URL = "https://jnlyosvinbj4ebypmosfqgdvha0fkhzo.lambda-url.us-east-2.on.aws"; 
 
 // -------------------- EMAIL/PASSWORD --------------------
@@ -102,4 +111,56 @@ export async function promptLogin(context: vscode.ExtensionContext) {
     } else if (choice === 'GitHub OAuth') {
         return githubLoginOrSignup(context);
     }
+}
+
+let panel: vscode.WebviewPanel | undefined;
+
+export function renderLogin(context: vscode.ExtensionContext){
+    if(!panel){
+        panel = vscode.window.createWebviewPanel(
+            'LoginPreview', 
+            'Login Preview', 
+            vscode.ViewColumn.Two,
+            {
+                enableScripts: true, 
+                retainContextWhenHidden: true, 
+                localResourceRoots: [
+                    vscode.Uri.joinPath(context.extensionUri, 'lib')
+                ]
+            }
+        );
+
+        panel.onDidDispose(() => {
+            panel = undefined; 
+        });
+    }
+
+     const webview = panel.webview; 
+
+     const loginCSSUri = webview.asWebviewUri(
+        vscode.Uri.joinPath(context.extensionUri, 'lib/login', 'login.css')
+     );
+
+     webview.html = getLoginHtml(webview, loginCSSUri); 
+}
+
+function getLoginHtml(
+    webview: vscode.Webview,
+    loginCSSUri: vscode.Uri, 
+){
+    const nouce = getNonce(); 
+    return `
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charstt="UTF-8">
+            <meta name="viewport" content="with=device-width, inital-scale=1.0">
+            <style nonce=${nouce} src=${loginCSSUri}><style> 
+        </head>
+        <body>
+            <button>Github Login</button> 
+            <button>Email & Password</button>
+        </body>
+        </html>
+    `
 }

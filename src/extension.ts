@@ -1,4 +1,5 @@
 import * as vscode from 'vscode';
+import { renderLogin } from './loginService';
 import { renderPreview } from './preview';
 import { sendToServer } from './compilerService';
 import { checkLogin, promptLogin } from './loginService';
