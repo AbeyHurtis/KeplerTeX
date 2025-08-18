@@ -238,6 +238,8 @@ function getLoginHtml(
                             <input type="password" id="password" placeholder="Password" />
                             <input type="password" id="repassword" placeholder="Re-enter Password" />
                             <button id="submitEmailForm">Submit</button>
+                            <span id="backArrow">&larr;</span> 
+
                         </div>
 
                         <div class="textFooter">
