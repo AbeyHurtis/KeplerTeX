@@ -8,8 +8,7 @@ export async function sendToServer(context: vscode.ExtensionContext, texRaw: str
     try {
         const tokenObject = await context.globalState.get<any>('authToken');
         const token = typeof tokenObject === 'string' ? tokenObject : tokenObject?.S;
-        console.log("token from sendToServer:", token);
-        console.log("token from sendToServer: ", token);
+        
         const form = new FormData();
         const latexStream = Readable.from(texRaw);
 

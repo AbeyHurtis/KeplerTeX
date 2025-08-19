@@ -295,6 +295,7 @@ function getLoginHtml(
                             <input type="password" id="signupPassword" placeholder="Password" />
                             <input type="password" id="repassword" placeholder="Re-enter Password" />
                             <button id="submitSignupForm">Sign Up</button>
+                            <span id="signupMessages"></span>
                             <span id="goToLogin">Already have an account? Login</span>
                             <span id="backArrowSignup">&larr;</span>
                         </div>
