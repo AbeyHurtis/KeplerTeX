@@ -6,7 +6,10 @@ import * as vscode from 'vscode';
 
 export async function sendToServer(context: vscode.ExtensionContext, texRaw: string, fileName: string, onProgress?: (percent: number) => void): Promise<Buffer | undefined> {
     try {
-        const token = await context.globalState.get<string>('authToken');
+        const tokenObject = await context.globalState.get<any>('authToken');
+        const token = typeof tokenObject === 'string' ? tokenObject : tokenObject?.S;
+        console.log("token from sendToServer:", token);
+        console.log("token from sendToServer: ", token);
         const form = new FormData();
         const latexStream = Readable.from(texRaw);
 
@@ -20,7 +23,7 @@ export async function sendToServer(context: vscode.ExtensionContext, texRaw: str
         };
 
         if (token) {
-            headers.Authorization = token;
+            headers.Authorization = token.toString();
         }
 
 

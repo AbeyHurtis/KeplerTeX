@@ -76,7 +76,9 @@ export async function githubLoginOrSignup(context: vscode.ExtensionContext, isSi
 
 // -------------------- CHECK LOGIN --------------------
 export async function checkLogin(context: vscode.ExtensionContext) {
-    const token = await context.globalState.get<string>('authToken');
+    const tokenObject = await context.globalState.get<any>('authToken');
+    const token = typeof tokenObject === 'string' ? tokenObject : tokenObject?.S;
+
     if (!token) return false;
 
     const res = await fetch(`${LAMBDA_BASE_URL}/checklogin`, {
