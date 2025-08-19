@@ -24,11 +24,11 @@ export async function emailSignup(username: string, email: string, password: str
     return data.token;
 }
 
-export async function emailLogin(email: string, password: string) {
+export async function emailLogin(username: string, password: string) {
     const res = await fetch(`${LAMBDA_BASE_URL}/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password })
+        body: JSON.stringify({ username, password })
     });
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || 'Login failed');
@@ -175,19 +175,23 @@ export function renderLogin(context: vscode.ExtensionContext): Promise<string | 
                     }
                     break;
 
-                case 'submitEmailForm': {
+                case 'checkUsernameAndSignup': {
                     const { username, email, password } = message.data;
                     try {
-                        // first signup, then login
-                        await emailSignup(username, email, password);
-                        token = await emailLogin(email, password);
-                        if (token) {
+                        const exists = await checkUsername(username);
+                        if (!exists) {
+                            await emailSignup(username, email, password);
+                            const token = await emailLogin(username, password);
                             await context.globalState.update('authToken', token);
                             vscode.window.showInformationMessage(`Logged in as ${username}`);
-                            resolve(token);
-                            panel?.dispose();
-                        } else {
-                            vscode.window.showErrorMessage("Signup Failed!");
+                            if (token) {
+                                resolve(token);
+                                panel?.dispose();
+                            }
+                        }
+                        else {
+                            vscode.window.showInformationMessage('User name already exists, please try again');
+                            return;
                         }
 
                     } catch (err: any) {
@@ -214,11 +218,26 @@ export function renderLogin(context: vscode.ExtensionContext): Promise<string | 
 
                 case 'wrongPassword':
                     vscode.window.showErrorMessage("Passwords Does not match");
+                    break;
+
+                case 'usernameTaken':
+                    vscode.window.showErrorMessage("That username is already taken. Please choose another.");
+                    break;
             }
         });
     })
 
 }
+
+export async function checkUsername(username: string) {
+    const res = await fetch(`${LAMBDA_BASE_URL}/checkusername?username=${encodeURIComponent(username)}`, {
+        method: 'GET'
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || "Username check failed");
+    return data.exists;
+}
+
 
 function getLoginHtml(
     webview: vscode.Webview,
@@ -261,7 +280,7 @@ function getLoginHtml(
                         </div>
                         
                         <div id="loginForm">
-                            <input type="email" id="loginEmail" placeholder="Email" />
+                            <input type="text" id="username" placeholder="Username" />
                             <input type="password" id="loginPassword" placeholder="Password" />
                             <button id="submitLoginForm">Login</button>
                             <span id="goToSignup">Don’t have an account? Sign up</span>
