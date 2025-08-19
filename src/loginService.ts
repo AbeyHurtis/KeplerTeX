@@ -117,7 +117,7 @@ export async function promptLogin(context: vscode.ExtensionContext) {
 
 let panel: vscode.WebviewPanel | undefined;
 
-export function renderLogin(context: vscode.ExtensionContext): Promise<string | null>{
+export function renderLogin(context: vscode.ExtensionContext): Promise<string | null> {
 
     return new Promise((resolve) => {
 
@@ -170,35 +170,48 @@ export function renderLogin(context: vscode.ExtensionContext): Promise<string | 
                 case 'githubLogin':
                     token = await githubLoginOrSignup(context);
                     if (token) {
-                            resolve(token);
-                            panel?.dispose();
-                        }
+                        resolve(token);
+                        panel?.dispose();
+                    }
                     break;
 
                 case 'submitEmailForm': {
                     const { username, email, password } = message.data;
                     try {
-
+                        // first signup, then login
                         await emailSignup(username, email, password);
                         token = await emailLogin(email, password);
                         if (token) {
                             await context.globalState.update('authToken', token);
                             vscode.window.showInformationMessage(`Logged in as ${username}`);
-                            resolve(token); 
+                            resolve(token);
                             panel?.dispose();
                         } else {
                             vscode.window.showErrorMessage("Signup Failed!");
                         }
-                    
+
                     } catch (err: any) {
                         vscode.window.showErrorMessage(err.message);
                     }
                     break;
                 }
-                case 'emailLogin':
-                    // webview.html = 
-                    console.log("testing");
-                    break;
+                case 'emailLogin': {
+                    const { email, password } = message.data;
+                    try {
+                        const token = await emailLogin(email, password);
+                        if (token) {
+                            await context.globalState.update('authToken', token);
+                            vscode.window.showInformationMessage(`Logged in as ${email}`);
+                            resolve(token);
+                            panel?.dispose();
+                        } else {
+                            vscode.window.showErrorMessage("Login Failed!");
+                        }
+                    } catch (err: any) {
+                        vscode.window.showErrorMessage(err.message);
+                    }
+                }
+
                 case 'wrongPassword':
                     vscode.window.showErrorMessage("Passwords Does not match");
             }
@@ -247,14 +260,22 @@ function getLoginHtml(
                             <button class="emailLoginButton"><img src="${emailLogoUri}" /></button>
                         </div>
                         
-                        <div id="emailForm">
-                            <input type="text" id="username" placeholder="Username" />
-                            <input type="email" id="email" placeholder="Email" />
-                            <input type="password" id="password" placeholder="Password" />
-                            <input type="password" id="repassword" placeholder="Re-enter Password" />
-                            <button id="submitEmailForm">Submit</button>
-                            <span id="backArrow">&larr;</span> 
+                        <div id="loginForm">
+                            <input type="email" id="loginEmail" placeholder="Email" />
+                            <input type="password" id="loginPassword" placeholder="Password" />
+                            <button id="submitLoginForm">Login</button>
+                            <span id="goToSignup">Don’t have an account? Sign up</span>
+                            <span id="backArrowLogin">&larr; Back</span>
+                        </div>
 
+                        <div id="signupForm">
+                            <input type="text" id="username" placeholder="Username" />
+                            <input type="email" id="signupEmail" placeholder="Email" />
+                            <input type="password" id="signupPassword" placeholder="Password" />
+                            <input type="password" id="repassword" placeholder="Re-enter Password" />
+                            <button id="submitSignupForm">Sign Up</button>
+                            <span id="goToLogin">Already have an account? Login</span>
+                            <span id="backArrowSignup">&larr; Back</span>
                         </div>
 
                         <div class="textFooter">

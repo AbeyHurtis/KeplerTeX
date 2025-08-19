@@ -86,22 +86,21 @@ button:hover {
 }
 
 
-/* Existing styles remain unchanged */
 
-#emailForm {
-    display: none; /* hidden by default */
+#loginForm, #signupForm {
+    display: none;
     margin-top: 20px;
     flex-direction: column;
     align-items: center;
     gap: 10px;
 }
 
-/* When form should be visible */
-#emailForm.active {
+#loginForm.active,
+#signupForm.active {
     display: flex;
 }
 
-#emailForm input {
+#loginForm input, #signupForm input {
     width: 250px;
     padding: 10px;
     border: 1px solid #ccc;
@@ -109,7 +108,7 @@ button:hover {
     font-size: 14px;
 }
 
-#submitEmailForm {
+#submitLoginForm, #submitSignupForm {
     height: 45px;
     width: 200px;
     border-radius: 6px;
@@ -119,13 +118,25 @@ button:hover {
     color: white;
     font-size: 16px;
     cursor: pointer;
-    transition: all 0.9s ease;
+    transition: all 0.3s ease;
 }
 
-#submitEmailForm:hover {
+#submitLoginForm:hover, #submitSignupForm:hover {
     background-color: #333;
     transform: scale(1.05);
 }
+
+#goToSignup, #goToLogin {
+    font-size: 14px;
+    color: #007acc;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+#goToSignup:hover, #goToLogin:hover {
+    text-decoration: underline;
+}
+
 
 #backButton {
     height: 40px;
