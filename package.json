@@ -2,7 +2,7 @@
   "name": "keplertex",
   "displayName": "keplertex",
   "description": "online latex compiler",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "repository": {
     "type": "git",
     "url": "https://github.com/AbeyHurtis/keplertex"
@@ -14,8 +14,9 @@
     "vscode": "^1.100.0"
   },
   "categories": [
-    "Other"
+    "Other", "Programming Languages", "Visualization", "Education", "Testing"
   ],
+  "keywords": ["latex", "tex", "compiler", "latex compiler","math", "pdf"],
   "activationEvents": [
     "onLanguage:latex"
   ],
