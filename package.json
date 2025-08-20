@@ -7,6 +7,7 @@
     "type": "git",
     "url": "https://github.com/AbeyHurtis/keplertex"
   },
+  "icon": "lib/login/logo.png",
   "publisher": "Hurtis",
   "license":"Apache-2.0",
   "engines": {
