@@ -180,6 +180,7 @@ export function renderLogin(context: vscode.ExtensionContext): Promise<string | 
                 case 'checkUsernameAndSignup': {
                     const { username, email, password } = message.data;
                     try {
+                        console.log("username from checkusernameandSignup : ", username);
                         const exists = await checkUsername(username);
                         if (!exists) {
                             await emailSignup(username, email, password);
@@ -216,14 +217,11 @@ export function renderLogin(context: vscode.ExtensionContext): Promise<string | 
                     } catch (err: any) {
                         vscode.window.showErrorMessage(err.message);
                     }
+                    break;
                 }
 
-                case 'wrongPassword':
-                    vscode.window.showErrorMessage("Passwords Does not match");
-                    break;
-
                 case 'usernameTaken':
-                    vscode.window.showErrorMessage("That username is already taken. Please choose another.");
+                    vscode.window.showErrorMessage("The username is already taken. Please choose another.");
                     break;
             }
         });
@@ -232,6 +230,8 @@ export function renderLogin(context: vscode.ExtensionContext): Promise<string | 
 }
 
 export async function checkUsername(username: string) {
+    console.log("checkusername : ", username);
+    console.log("uri : ", `${LAMBDA_BASE_URL}/checkusername?username=${encodeURIComponent(username)}`);
     const res = await fetch(`${LAMBDA_BASE_URL}/checkusername?username=${encodeURIComponent(username)}`, {
         method: 'GET'
     });
@@ -282,19 +282,20 @@ function getLoginHtml(
                         </div>
                         
                         <div id="loginForm">
-                            <input type="text" id="username" placeholder="Username" />
+                            <input type="text" id="loginUsername" placeholder="Username" />
                             <input type="password" id="loginPassword" placeholder="Password" />
-                            <button id="submitLoginForm">Login</button>
+                            <button id="submitLoginForm" type="button">Login</button>
+                            <span id="loginMessages"></span>
                             <span id="goToSignup">Don’t have an account? Sign up</span>
                             <span id="backArrowLogin">&larr;</span>
                         </div>
 
                         <div id="signupForm">
-                            <input type="text" id="username" placeholder="Username" />
+                            <input type="text" id="signupUsername" placeholder="Username" />
                             <input type="email" id="signupEmail" placeholder="Email" />
                             <input type="password" id="signupPassword" placeholder="Password" />
                             <input type="password" id="repassword" placeholder="Re-enter Password" />
-                            <button id="submitSignupForm">Sign Up</button>
+                            <button id="submitSignupForm" type="button">Sign Up</button>
                             <span id="signupMessages"></span>
                             <span id="goToLogin">Already have an account? Login</span>
                             <span id="backArrowSignup">&larr;</span>
