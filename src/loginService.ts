@@ -180,7 +180,6 @@ export function renderLogin(context: vscode.ExtensionContext): Promise<string | 
                 case 'checkUsernameAndSignup': {
                     const { username, email, password } = message.data;
                     try {
-                        console.log("username from checkusernameandSignup : ", username);
                         const exists = await checkUsername(username);
                         if (!exists) {
                             await emailSignup(username, email, password);
@@ -230,8 +229,6 @@ export function renderLogin(context: vscode.ExtensionContext): Promise<string | 
 }
 
 export async function checkUsername(username: string) {
-    console.log("checkusername : ", username);
-    console.log("uri : ", `${LAMBDA_BASE_URL}/checkusername?username=${encodeURIComponent(username)}`);
     const res = await fetch(`${LAMBDA_BASE_URL}/checkusername?username=${encodeURIComponent(username)}`, {
         method: 'GET'
     });
