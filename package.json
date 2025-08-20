@@ -3,6 +3,12 @@
   "displayName": "keplertex",
   "description": "online latex compiler",
   "version": "0.0.1",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AbeyHurtis/keplertex"
+  },
+  "publisher": "Hurtis",
+  "license":"Apache-2.0",
   "engines": {
     "vscode": "^1.100.0"
   },
