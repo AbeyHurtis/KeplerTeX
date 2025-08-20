@@ -3,12 +3,6 @@
 KeplerTeX lets you compile **LaTeX** documents directly inside the editor — **no local TeX installation required**.  
 Simply log in, write your LaTeX code, and compile instantly.
 
----
-
-## Features
-- Zero local setup – start compiling without installing TeXLive or other LaTeX distributions.  
-- Seamless workflow – edit, compile, and preview without leaving VS Code.  
-- Fast PDF rendering – preview your LaTeX output in seconds.  
 
 ---
 
@@ -26,6 +20,26 @@ Tip: Keep your `.tex` file open while editing. Each save updates the preview wit
 
 ---
 
+---
+
+## Features
+- Zero local setup – start compiling without installing TeXLive or other LaTeX distributions.  
+- Seamless workflow – edit, compile, and preview without leaving VS Code.  
+- Fast PDF rendering – preview your LaTeX output in seconds.  
+
+## Contribution
+
+We welcome contributions to improve KeplerTeX.  
+
+- **Repository**: [KeplerTeX on GitHub](https://github.com/AbeyHurtis/keplertex)  
+- To contribute:  
+  1. Fork the repository.  
+  2. Create a new branch for your feature or bug fix.  
+  3. Submit a pull request with a clear description of your changes.  
+
+If you encounter any issues or have feature requests, please [open an issue](https://github.com/AbeyHurtis/keplertex/issues).  
+
+
 ## Known Issues
 - Initial Release – N/A  
 
@@ -33,7 +47,8 @@ Tip: Keep your `.tex` file open while editing. Each save updates the preview wit
 
 ## Release Notes
 
-### v0.0.4  
+### v0.0.5  
 - First public release of KeplerTeX.  
 - LaTeX compilation and PDF preview integrated directly in VS Code.  
+
 
