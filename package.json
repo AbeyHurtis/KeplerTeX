@@ -2,21 +2,32 @@
   "name": "keplertex",
   "displayName": "keplertex",
   "description": "Compile you latex code, no local installations, write your LaTeX code, and compile instantly.",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "repository": {
     "type": "git",
     "url": "https://github.com/AbeyHurtis/keplertex"
   },
   "icon": "lib/login/logo.png",
   "publisher": "Hurtis",
-  "license":"Apache-2.0",
+  "license": "Apache-2.0",
   "engines": {
     "vscode": "^1.100.0"
   },
   "categories": [
-    "Other", "Programming Languages", "Visualization", "Education", "Testing"
+    "Other",
+    "Programming Languages",
+    "Visualization",
+    "Education",
+    "Testing"
   ],
-  "keywords": ["latex", "tex", "compiler", "latex compiler","math", "pdf"],
+  "keywords": [
+    "latex",
+    "tex",
+    "compiler",
+    "latex compiler",
+    "math",
+    "pdf"
+  ],
   "activationEvents": [
     "onLanguage:latex"
   ],
