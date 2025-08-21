@@ -47,7 +47,7 @@ If you encounter any issues or have feature requests, please [open an issue](htt
 
 ## Release Notes
 
-### v0.0.6  
+### v0.0.8  
 - First public release of KeplerTeX.  
 - LaTeX compilation and PDF preview integrated directly in VS Code.  
 

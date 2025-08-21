@@ -302,6 +302,18 @@ function getLoginHtml(
                             Login / Sign Up 
                         </div>
 
+                        <div id="passwordRequirement">
+                            
+                            <div id="passwordReqList">
+                                <ul class="passwordReqListElems"> 
+                                    <li>The password must be at least 8 characters long</li>
+                                    <li>The password must contain at least 2 special characters</li>
+                                    <li>The password must contain at least 1 number</li>
+                                    <li>The password must contain at least 1 uppercase letter</li>
+                                </ul>
+                            </div>
+                        </div>
+
                     </div>
                     
                 </div>

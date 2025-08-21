@@ -1,6 +1,8 @@
 body {
     margin: 0;
     padding: 0;
+    font-family:'Courier New', Courier, monospace;
+
 }
 
 body.vscode-light {
@@ -66,7 +68,6 @@ button:hover {
     display: flex;
     color: #4a4a4a;
     font-size: 3vw;
-    font-family:'Courier New', Courier, monospace;
     margin-top: 20px;
 }
 
@@ -85,6 +86,43 @@ button:hover {
     background-color: #0e0d0d;
 }
 
+#passwordRequirement {
+    margin-top: 35px; 
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    display: none;
+}
+#passwordRequirement.active {
+    display: flex;
+}
+
+#passwordReqList { 
+    text-align: center;
+}
+
+.passwordReqListElems { 
+    display: inline-block;
+    text-align: center;
+    list-style-position: inside;
+    margin: 0 auto; 
+
+}
+
+.passwordReqListElems li {
+    text-align: center;
+}
+
+.passwordRequirmentTextHeader{
+    font-size: 2.5vw;
+    color: #444;
+}
+
+#passwordReqList {
+    font-size: 2.5vw;
+    color: #53b426;
+
+}
 
 
 #loginForm, #signupForm {
