@@ -1,6 +1,6 @@
 # KeplerTeX
 
-KeplerTeX lets you compile **LaTeX** documents directly inside the editor — **no local TeX installation required**.  
+KeplerTeX lets you compile **LaTeX** documents directly inside vscode — **no local TeX installation required**.  
 Simply log in, write your LaTeX code, and compile instantly.
 
 
