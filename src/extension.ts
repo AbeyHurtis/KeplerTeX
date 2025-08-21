@@ -58,8 +58,7 @@ export function activate(context: vscode.ExtensionContext) {
 	})
 
 	vscode.workspace.onDidSaveTextDocument(async (document) => {
-		if (initiated && (document.languageId === 'latex' || document.fileName.endsWith('.tex'))) return;
-
+		if (initiated && (document.languageId !== 'latex' || !document.fileName.endsWith('.tex'))) return;
 		// Check login before compilation
 		let loggedIn = await checkLogin(context);
 		if (!loggedIn) {
