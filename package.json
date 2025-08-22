@@ -2,7 +2,7 @@
   "name": "keplertex",
   "displayName": "keplertex",
   "description": "Compile you latex code, no local installations, write your LaTeX code, and compile instantly.",
-  "version": "0.0.10",
+  "version": "0.0.11",
   "repository": {
     "type": "git",
     "url": "https://github.com/AbeyHurtis/keplertex"
@@ -29,7 +29,7 @@
     "bibtex",
     "BibTeX style",
     "bibtex-style",
-    "cpp_embedded_latex", 
+    "cpp_embedded_latex",
     "pdf",
     "Cembeddedinlatex",
     "CombinedMarkdownLatex",
