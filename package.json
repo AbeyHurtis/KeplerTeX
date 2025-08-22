@@ -26,7 +26,27 @@
     "compiler",
     "latex compiler",
     "math",
-    "pdf"
+    "bibtex",
+    "BibTeX style",
+    "bibtex-style",
+    "cpp_embedded_latex", 
+    "pdf",
+    "Cembeddedinlatex",
+    "CombinedMarkdownLatex",
+    "doctex",
+    "doctex-installer",
+    "jlweave",
+    "latex-workshop-log",
+    "latex-class",
+    "latex-expl3",
+    "LatexPackage",
+    "latex-package",
+    "latex-workshop",
+    "markdown-latex-combined",
+    "preview",
+    "snippet",
+    "weave",
+    "weave.jl"
   ],
   "activationEvents": [
     "onLanguage:latex"
