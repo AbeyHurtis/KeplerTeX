@@ -121,7 +121,7 @@ function getWebviewHtml(
             <script type="module" src="${renderUri}"></script>
             <div id="toolbar"> 
                 <div  id="downloadButton">
-                    <img src="${downloadIconUri}">
+                    <img src="${downloadIconUri}" height=30 width=30>
                 </div>
             </div> 
             <div id="canvasContainer"> 
@@ -130,7 +130,3 @@ function getWebviewHtml(
     </html>
   `;
 }
-// logo1 <a href="https://www.flaticon.com/free-icons/user-interface" title="user interface icons">User interface icons created by Pop Vectors - Flaticon</a>
-// logo2 <a href="https://www.flaticon.com/free-icons/attachment" title="attachment icons">Attachment icons created by Freepik - Flaticon</a>
-// logo3 <a href="https://www.flaticon.com/free-icons/download" title="download icons">Download icons created by Kiranshastry - Flaticon</a>
-// logo4 <a href="https://www.flaticon.com/free-icons/user-interface" title="user interface icons">User interface icons created by Iconise - Flaticon</a>
