@@ -47,7 +47,7 @@ If you encounter any issues or have feature requests, please [open an issue](htt
 
 ## Release Notes
 
-### v0.0.11  
+### v0.0.12  
 - license update. 
 
 
