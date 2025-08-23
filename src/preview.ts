@@ -65,9 +65,12 @@ export function renderPreview(context: vscode.ExtensionContext,pdfBuffer?: Uint8
         vscode.Uri.joinPath(context.extensionUri, 'lib/renderjs', 'render.css')
     );
 
+    const downloadIconUri = webview.asWebviewUri(
+        vscode.Uri.joinPath(context.extensionUri, 'lib/renderjs', 'dl.png')
+    );
     // Set webview HTML
     // webview.html = getWebviewHtml(webview, pdfJsUri, workerUri, pdfFileUri, renderScriptUri, renderCSSUri);
-    webview.html = getWebviewHtml(webview, pdfJsUri, workerUri, renderScriptUri, renderCSSUri);
+    webview.html = getWebviewHtml(webview, pdfJsUri, workerUri, downloadIconUri, renderScriptUri, renderCSSUri);
 
     if (pdfBuffer) {
         const base64Pdf = Buffer.from(pdfBuffer).toString('base64');
@@ -83,6 +86,7 @@ function getWebviewHtml(
     pdfJsUri: vscode.Uri,
     workerUri: vscode.Uri,
     // pdfFileUri: vscode.Uri,
+    downloadIconUri: vscode.Uri, 
     renderUri: vscode.Uri,
     renderCSSUri: vscode.Uri
 ) {
@@ -104,7 +108,7 @@ function getWebviewHtml(
             ">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-	<style nonce="${nonce}" src='${renderCSSUri}'>
+    <link nonce="${nonce}" rel="stylesheet" href="${renderCSSUri}">
 	</style>
     </head>
         <body>
@@ -115,7 +119,18 @@ function getWebviewHtml(
             </script>
 
             <script type="module" src="${renderUri}"></script>
+            <div id="toolbar"> 
+                <div  id="downloadButton">
+                    <img src="${downloadIconUri}">
+                </div>
+            </div> 
+            <div id="canvasContainer"> 
+            </div>
         </body>
     </html>
   `;
 }
+// logo1 <a href="https://www.flaticon.com/free-icons/user-interface" title="user interface icons">User interface icons created by Pop Vectors - Flaticon</a>
+// logo2 <a href="https://www.flaticon.com/free-icons/attachment" title="attachment icons">Attachment icons created by Freepik - Flaticon</a>
+// logo3 <a href="https://www.flaticon.com/free-icons/download" title="download icons">Download icons created by Kiranshastry - Flaticon</a>
+// logo4 <a href="https://www.flaticon.com/free-icons/user-interface" title="user interface icons">User interface icons created by Iconise - Flaticon</a>
