@@ -1,7 +1,7 @@
 {
   "name": "keplertex",
   "displayName": "keplertex",
-  "description": "Compile you latex code, no local installations, write your LaTeX code, and compile instantly.",
+  "description": "Compile your latex code, no local installations, write your LaTeX code, and compile instantly.",
   "version": "0.0.12",
   "repository": {
     "type": "git",
