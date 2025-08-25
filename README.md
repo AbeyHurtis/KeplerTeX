@@ -46,4 +46,4 @@ If you encounter any issues or have feature requests, please [open an issue](htt
 ---
 
 ## Release Notes
-added Bib file support 
+added bibtex support 

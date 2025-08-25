@@ -1,6 +1,6 @@
 \documentclass{article}
 \usepackage[utf8]{inputenc}
-\usepackage{cite}
+
 
 \title{Sample Document with Reference}
 \author{Your Name}
@@ -10,10 +10,12 @@
 
 \maketitle
 
-This is a simple document that cites an article~\cite{lamport1994}.
-
+This is a simple document that cites:
+- Lamport 1994:~\cite{lamport1994}\\
+- Lamport 1995:~\cite{lamport1995}\\
+- Knuth 1984:~\cite{knuth1984}\\
+newline
+\bibliography{references, ref}
 \bibliographystyle{plain}
-\bibliography{references}
 
 \end{document}
-

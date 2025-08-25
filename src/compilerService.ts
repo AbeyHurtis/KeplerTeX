@@ -16,12 +16,16 @@ function getBibFilesFromText(texRaw: string): string[] {
         const files = bibMatch[1].split(',').map(f => f.trim());
         bibFiles.push(...files.map(f => f.endsWith('.bib') ? f : `${f}.bib`));
     }
-
+    
     //check source with \addbibresource{}
     const addBibMatch = texRaw.matchAll(/\\addbibresource\{([^}]+)\}/g); 
-    for (const match of addBibMatch) {
-        bibFiles.push(match[1].trim());
+    if(addBibMatch){
+        vscode.window.showWarningMessage("Please replace \\addbibresource with \\bibliograph, biber support not supported yet");
+        return [];
     }
+    // for (const match of addBibMatch) {
+    //     bibFiles.push(match[1].trim());
+    // }
 
     return bibFiles; 
 }
