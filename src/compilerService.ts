@@ -4,11 +4,11 @@ import { Readable } from 'stream';
 import * as vscode from 'vscode';
 
 
-export async function sendToServer(context: vscode.ExtensionContext, texRaw: string, fileName: string, onProgress?: (percent: number) => void): Promise<Buffer | undefined> {
+export async function sendToServer(context: vscode.ExtensionContext, texRaw: string, fileName: string, hasBibFile: boolean|undefined, onProgress?: (percent: number) => void): Promise<Buffer | undefined> {
     try {
         const tokenObject = await context.globalState.get<any>('authToken');
         const token = typeof tokenObject === 'string' ? tokenObject : tokenObject?.S;
-        
+
         const form = new FormData();
         const latexStream = Readable.from(texRaw);
 

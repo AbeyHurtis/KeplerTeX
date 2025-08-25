@@ -1,10 +1,12 @@
+import * as fs from 'fs';
+import * as path from 'path';
 import * as vscode from 'vscode';
 import { renderLogin } from './loginService';
 import { renderPreview } from './preview';
 import { sendToServer } from './compilerService';
 import { checkLogin, promptLogin } from './loginService';
 
-function renderWithProgress(context: vscode.ExtensionContext, document: vscode.TextDocument) {
+function renderWithProgress(context: vscode.ExtensionContext, document: vscode.TextDocument, hasBibFile: boolean|undefined) {
 	const texRaw = document.getText();
 	vscode.window.withProgress({
 		location: vscode.ProgressLocation.Notification,
@@ -15,7 +17,7 @@ function renderWithProgress(context: vscode.ExtensionContext, document: vscode.T
 
 		if (token.isCancellationRequested) return;
 
-		const pdfBufferReturn = await sendToServer(context, texRaw, document.fileName);
+		const pdfBufferReturn = await sendToServer(context, texRaw,document.fileName, hasBibFile);
 		if (!token.isCancellationRequested && pdfBufferReturn) {
 			renderPreview(context, pdfBufferReturn);
 			progress.report({ increment: 100, message: "Done" });
@@ -25,6 +27,8 @@ function renderWithProgress(context: vscode.ExtensionContext, document: vscode.T
 
 export function activate(context: vscode.ExtensionContext) {
 	let initiated = false;
+	let hasBibFile: boolean | undefined = undefined; // undefined until first computation
+	let bibWarningShown = false; // track if we already warned
 
 	const startRenderCmd = vscode.commands.registerCommand('keplertex.startRender', async () => {
 
@@ -36,17 +40,25 @@ export function activate(context: vscode.ExtensionContext) {
 		const document = editor.document;
 		const token = undefined;
 
+
 		if (!initiated && (document.languageId === 'latex' && document.fileName.endsWith('.tex'))) {
 			await context.globalState.update("authToken", undefined);
 
+			const dir = path.dirname(document.fileName);
+			const files = fs.readdirSync(dir);
+			hasBibFile = files.some(file => file.endsWith('.bib'));
 
+			if (!hasBibFile && !bibWarningShown) {
+				vscode.window.showWarningMessage('No .bib file found in the current directory. BibTeX compilation may fail.');
+				bibWarningShown = true; // ensure we warn only once
+			}
 
 			let loggedIn = await checkLogin(context);
 			if (!loggedIn) {
 				const token = await renderLogin(context);
 				loggedIn = true;
 				if (token) {
-					renderWithProgress(context, document);
+					renderWithProgress(context, document, hasBibFile);
 					initiated = true;
 				}
 				if (!token) {
@@ -71,7 +83,7 @@ export function activate(context: vscode.ExtensionContext) {
 		}
 
 		if (loggedIn) {
-			renderWithProgress(context, document);
+			renderWithProgress(context, document, hasBibFile);
 		}
 	});
 
