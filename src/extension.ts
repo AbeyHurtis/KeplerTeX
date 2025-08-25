@@ -1,5 +1,3 @@
-import * as fs from 'fs';
-import * as path from 'path';
 import * as vscode from 'vscode';
 import { renderLogin } from './loginService';
 import { renderPreview } from './preview';
@@ -17,7 +15,7 @@ function renderWithProgress(context: vscode.ExtensionContext, document: vscode.T
 
 		if (token.isCancellationRequested) return;
 
-		const pdfBufferReturn = await sendToServer(context, texRaw,document.fileName, hasBibFile);
+		const pdfBufferReturn = await sendToServer(context, texRaw,document.fileName);
 		if (!token.isCancellationRequested && pdfBufferReturn) {
 			renderPreview(context, pdfBufferReturn);
 			progress.report({ increment: 100, message: "Done" });
@@ -44,14 +42,14 @@ export function activate(context: vscode.ExtensionContext) {
 		if (!initiated && (document.languageId === 'latex' && document.fileName.endsWith('.tex'))) {
 			await context.globalState.update("authToken", undefined);
 
-			const dir = path.dirname(document.fileName);
-			const files = fs.readdirSync(dir);
-			hasBibFile = files.some(file => file.endsWith('.bib'));
+			// const dir = path.dirname(document.fileName);
+			// const files = fs.readdirSync(dir);
+			// hasBibFile = files.some(file => file.endsWith('.bib'));
 
-			if (!hasBibFile && !bibWarningShown) {
-				vscode.window.showWarningMessage('No .bib file found in the current directory. BibTeX compilation may fail.');
-				bibWarningShown = true; // ensure we warn only once
-			}
+			// if (!hasBibFile && !bibWarningShown) {
+			// 	vscode.window.showWarningMessage('No .bib file found in the current directory. BibTeX compilation may fail.');
+			// 	bibWarningShown = true; // ensure we warn only once
+			// }
 
 			let loggedIn = await checkLogin(context);
 			if (!loggedIn) {

@@ -1,15 +1,63 @@
+import * as fs from 'fs';
+import * as path from 'path';
 import fetch from 'node-fetch';
 import FormData from 'form-data';
 import { Readable } from 'stream';
 import * as vscode from 'vscode';
 
 
-export async function sendToServer(context: vscode.ExtensionContext, texRaw: string, fileName: string, hasBibFile: boolean|undefined, onProgress?: (percent: number) => void): Promise<Buffer | undefined> {
+
+function getBibFilesFromText(texRaw: string): string[] {
+    const bibFiles: string[] = [];
+
+    // Check source with \bibliography{} 
+    const bibMatch = texRaw.match(/\\bibliography\{([^}]+)\}/);
+    if (bibMatch) {
+        const files = bibMatch[1].split(',').map(f => f.trim());
+        bibFiles.push(...files.map(f => f.endsWith('.bib') ? f : `${f}.bib`));
+    }
+
+    //check source with \addbibresource{}
+    const addBibMatch = texRaw.matchAll(/\\addbibresource\{([^}]+)\}/g); 
+    for (const match of addBibMatch) {
+        bibFiles.push(match[1].trim());
+    }
+
+    return bibFiles; 
+}
+
+
+export async function sendToServer(context: vscode.ExtensionContext, texRaw: string, fileName: string, onProgress?: (percent: number) => void): Promise<Buffer | undefined> {
     try {
         const tokenObject = await context.globalState.get<any>('authToken');
         const token = typeof tokenObject === 'string' ? tokenObject : tokenObject?.S;
-
+        
         const form = new FormData();
+
+        const bibFiles = getBibFilesFromText(texRaw);
+
+        if(bibFiles.length > 0){
+
+            const dir = path.dirname(fileName);
+            for(const bibMatch of bibFiles){
+                try{
+                    const bibPath = path.resolve(dir, bibMatch);
+                    if (!fs.existsSync(bibPath)) {
+                        vscode.window.showWarningMessage(`Bib file not found: ${bibMatch}`);
+                        continue;
+                    }
+
+                    const bibStream = fs.createReadStream(bibPath);
+                    form.append('bib_files', bibStream, {
+                        filename: bibMatch,
+                        contentType: 'application/x-bib'
+                    });
+                }
+                catch(err) {
+                    vscode.window.showWarningMessage(`${err}: Please make sure all **.bib** files are present in same directory and the names are matching`);
+                }
+            }
+        }
         const latexStream = Readable.from(texRaw);
 
         form.append('tex_file', latexStream, {

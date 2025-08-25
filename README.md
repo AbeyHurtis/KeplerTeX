@@ -46,10 +46,4 @@ If you encounter any issues or have feature requests, please [open an issue](htt
 ---
 
 ## Release Notes
-
-### v0.0.12  
-- license update. 
-
-
-TODO : 
-add bib support 
+added Bib file support 
