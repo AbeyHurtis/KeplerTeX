@@ -2,7 +2,7 @@ import * as vscode from 'vscode';
 import { renderLogin } from './loginService';
 import { renderPreview } from './preview';
 import { sendToServer } from './compilerService';
-import { checkLogin, promptLogin } from './loginService';
+import { checkLogin } from './loginService';
 
 function renderWithProgress(context: vscode.ExtensionContext, document: vscode.TextDocument, hasBibFile: boolean|undefined) {
 	const texRaw = document.getText();
@@ -27,6 +27,7 @@ export function activate(context: vscode.ExtensionContext) {
 	let initiated = false;
 	let hasBibFile: boolean | undefined = undefined; // undefined until first computation
 	let bibWarningShown = false; // track if we already warned
+	const token = undefined;
 
 	const startRenderCmd = vscode.commands.registerCommand('keplertex.startRender', async () => {
 
@@ -40,7 +41,8 @@ export function activate(context: vscode.ExtensionContext) {
 
 
 		if (!initiated && (document.languageId === 'latex' && document.fileName.endsWith('.tex'))) {
-			await context.globalState.update("authToken", undefined);
+			// check login window , remove the comment when needed
+			// await context.globalState.update("authToken", undefined);
 
 			// const dir = path.dirname(document.fileName);
 			// const files = fs.readdirSync(dir);
@@ -64,6 +66,10 @@ export function activate(context: vscode.ExtensionContext) {
 					return;
 				}
 			}
+			if(loggedIn){
+				renderWithProgress(context, document, hasBibFile);
+				initiated = true;
+			}
 		}
 	})
 
@@ -72,7 +78,8 @@ export function activate(context: vscode.ExtensionContext) {
 		// Check login before compilation
 		let loggedIn = await checkLogin(context);
 		if (!loggedIn) {
-			const token = await promptLogin(context);
+			const token = await renderLogin(context);
+			loggedIn = true;
 			if (!token) {
 				vscode.window.showErrorMessage('Login required to compile.');
 				return;
