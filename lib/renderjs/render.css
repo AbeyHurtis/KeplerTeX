@@ -51,10 +51,14 @@ canvas {
 }
 
 #currentPageIndicator {
-    background-color: #fff;
-    height: 30px;
-    width: 30px;
+    background-color: #ffffff;
+    height: 25px;
+    width: 25px;
     border-radius: 5px;
+}
+
+#currentPageIndicator::placeholder {
+    text-align: center;
 }
 
 #totalPages {
