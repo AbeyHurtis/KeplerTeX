@@ -270,7 +270,7 @@ function getLoginHtml(
                     <div class="loginCenter">
 
                         <div class="logo">
-                            <img src="${logoUri}" height=200 width=200/>
+                            <img src="${logoUri}" width=191px height=119px/>
                         </div>
 
                         <div class="buttonDiv">

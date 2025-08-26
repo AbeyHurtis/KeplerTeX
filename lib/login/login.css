@@ -68,13 +68,15 @@ button:hover {
     display: flex;
     color: #4a4a4a;
     font-size: 3vw;
-    margin-top: 20px;
+    margin-top: 50px;
 }
 
 .logo { 
     justify-content: center;
     align-items: center;
     display: flex;
+    /* width: 191px; */
+    margin-bottom: 85px;
 }
 
 .githubLoginButton{

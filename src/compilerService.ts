@@ -18,11 +18,12 @@ function getBibFilesFromText(texRaw: string): string[] {
     }
     
     //check source with \addbibresource{}
-    const addBibMatch = texRaw.matchAll(/\\addbibresource\{([^}]+)\}/g); 
-    if(addBibMatch){
-        vscode.window.showWarningMessage("Please replace \\addbibresource with \\bibliograph, biber support not supported yet");
-        return [];
-    }
+    // const addBibMatch = texRaw.matchAll(/\\addbibresource\{([^}]+)\}/g); 
+    // console.log("add bib match : ",addBibMatch);
+    // if(addBibMatch){
+    //     vscode.window.showWarningMessage("Please replace \\addbibresource with \\bibliograph, biber support not supported yet");
+    //     return [];
+    // }
     // for (const match of addBibMatch) {
     //     bibFiles.push(match[1].trim());
     // }
