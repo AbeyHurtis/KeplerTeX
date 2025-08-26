@@ -120,7 +120,10 @@ function getWebviewHtml(
 
             <script type="module" src="${renderUri}"></script>
             <div id="toolbar"> 
-                <div id="currentPageIdicator"></div>
+                <div id="pageIndicator">
+                    <input type="number" id="currentPageIndicator">
+                    <span id="totalPages"></span>
+                </div>
                 <div  id="downloadButton">
                     <img src="${downloadIconUri}" height=30 width=30>
                 </div>
