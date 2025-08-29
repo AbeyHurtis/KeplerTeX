@@ -1,0 +1,3 @@
+[submodule "syntax/vscode-latex-basics"]
+	path = syntax/vscode-latex-basics
+	url = https://github.com/jlelong/vscode-latex-basics.git
