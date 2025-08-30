@@ -72,6 +72,13 @@ export function activate(context: vscode.ExtensionContext) {
 			}
 		}
 	})
+	const latexProvider = vscode.languages.registerCompletionItemProvider(
+		{languages: 'latex', file: '.tex'},
+		provideCompleteion(){
+			const provider: vscode.CompletionItem[] = []; 
+			return provider; 
+		},
+	);  
 
 	vscode.workspace.onDidSaveTextDocument(async (document) => {
 		if (initiated && (document.languageId !== 'latex' || !document.fileName.endsWith('.tex'))) return;
