@@ -42,7 +42,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 		if (!initiated && (document.languageId === 'latex' && document.fileName.endsWith('.tex'))) {
 			// check login window , remove the comment when needed
-			// await context.globalState.update("authToken", undefined);
+			await context.globalState.update("authToken", undefined);
 
 			// const dir = path.dirname(document.fileName);
 			// const files = fs.readdirSync(dir);

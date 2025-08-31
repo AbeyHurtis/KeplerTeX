@@ -298,6 +298,14 @@ function getLoginHtml(
                             <span id="backArrowSignup">&larr;</span>
                         </div>
 
+                        <div id="TFAVerification"> 
+                            <input type="text" id="tfa1">
+                            <input type="text" id="tfa2">
+                            <input type="text" id="tfa3">
+                            <input type="text" id="tfa4">
+                            <input type="text" id="tfa5">
+                        </div> 
+
                         <div class="textFooter">
                             Login / Sign Up 
                         </div>

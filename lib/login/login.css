@@ -88,6 +88,17 @@ button:hover {
     background-color: #0e0d0d;
 }
 
+#TFAVerification { 
+    display: none;
+    justify-content: center;
+    display: flex;
+    align-items: center;
+}
+
+#TFAVerification.acitve { 
+    display: flex;
+}
+
 #passwordRequirement {
     margin-top: 35px; 
     justify-content: center;
