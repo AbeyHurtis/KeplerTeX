@@ -73,11 +73,24 @@ export function activate(context: vscode.ExtensionContext) {
 		}
 	})
 	const latexProvider = vscode.languages.registerCompletionItemProvider(
-		{languages: 'latex', file: '.tex'},
-		provideCompleteion(){
-			const provider: vscode.CompletionItem[] = []; 
-			return provider; 
-		},
+		{language: 'latex', scheme: '.tex'},
+		{
+			provideCompletionItems(docuemnt, position, token, context){
+				const items: vscode.CompletionItem[] = [
+					new vscode.CompletionItem('\\begin{equation}\n\t\n\\end{equation}',vscode.CompletionItemKind.Snippet),
+					new vscode.CompletionItem('\\begin{itemize}\n\t\\item \n\\end{itemize}',vscode.CompletionItemKind.Snippet),
+					new vscode.CompletionItem('\\begin{enumerate}\n\t\\item \n\\end{enumerate}',vscode.CompletionItemKind.Snippet),
+					new vscode.CompletionItem('\\begin{align}\n\t\n\\end{align}',vscode.CompletionItemKind.Snippet),
+					new vscode.CompletionItem('\\frac{}{}',vscode.CompletionItemKind.Snippet),
+					new vscode.CompletionItem('\\sqrt{}',vscode.CompletionItemKind.Snippet),
+					new vscode.CompletionItem('\\sum_{}^{}',vscode.CompletionItemKind.Snippet),
+					new vscode.CompletionItem('\\int_{}^{}',vscode.CompletionItemKind.Snippet),
+					new vscode.CompletionItem('\\begin{figure}\n\\centering\n\\includegraphics[width=\\linewidth]{}\n\\caption{}\n\\label{fig:}\n\\end{figure}',vscode.CompletionItemKind.Snippet),
+					new vscode.CompletionItem('\\begin{table}\n\\centering\n\\begin{tabular}{}\n\\hline\n &  \\\\\n\\hline\n\\end{tabular}\n\\caption{}\n\\label{tab:}\n\\end{table}',vscode.CompletionItemKind.Snippet),
+				];
+				return [...items];
+			},
+		},'\\'
 	);  
 
 	vscode.workspace.onDidSaveTextDocument(async (document) => {
@@ -99,7 +112,7 @@ export function activate(context: vscode.ExtensionContext) {
 		}
 	});
 
-	context.subscriptions.push(startRenderCmd);
+	context.subscriptions.push(startRenderCmd, latexProvider);
 }
 
 export function deactivate() { }
