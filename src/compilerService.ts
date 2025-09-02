@@ -11,7 +11,8 @@ function getBibFilesFromText(texRaw: string): string[] {
     const bibFiles: string[] = [];
 
     // Check source with \bibliography{} 
-    const bibMatch = texRaw.match(/\\bibliography\{([^}]+)\}/);
+    const bibRegex = /^(?!\s*%).*\\bibliography\{([^}]+)\}/gm;
+    const bibMatch = texRaw.match(bibRegex);
     if (bibMatch) {
         const files = bibMatch[1].split(',').map(f => f.trim());
         bibFiles.push(...files.map(f => f.endsWith('.bib') ? f : `${f}.bib`));
