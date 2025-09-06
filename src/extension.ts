@@ -13,14 +13,14 @@ function renderWithProgress(context: vscode.ExtensionContext, document: vscode.T
 	}, async (progress, token) => {
 		progress.report({ increment: 0 });
 
-		if (token.isCancellationRequested) return;
+		if (token.isCancellationRequested){ return; };
 
 		const pdfBufferReturn = await sendToServer(context, texRaw,document.fileName);
 		if (!token.isCancellationRequested && pdfBufferReturn) {
 			renderPreview(context, pdfBufferReturn);
 			progress.report({ increment: 100, message: "Done" });
 		}
-	})
+	});
 }
 
 export function activate(context: vscode.ExtensionContext) {
@@ -71,10 +71,9 @@ export function activate(context: vscode.ExtensionContext) {
 				initiated = true;
 			}
 		}
-	})
-
+	});
 	vscode.workspace.onDidSaveTextDocument(async (document) => {
-		if (initiated && (document.languageId !== 'latex' || !document.fileName.endsWith('.tex'))) return;
+		if (initiated && (document.languageId !== 'latex' || !document.fileName.endsWith('.tex'))){ return; };
 		// Check login before compilation
 		let loggedIn = await checkLogin(context);
 		if (!loggedIn) {

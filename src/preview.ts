@@ -30,12 +30,12 @@ export function renderPreview(context: vscode.ExtensionContext,pdfBuffer?: Uint8
 
         panel.onDidDispose(() => {
            panel = undefined;
-       })
+       });
 
        panel.onDidChangeViewState(e => {
             if (!e.webviewPanel.visible) {
             panel?.webview.postMessage({type: 'clearZoomScale'});
-       }})
+       }});
 
 
     }
