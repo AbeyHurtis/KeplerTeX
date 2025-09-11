@@ -299,11 +299,12 @@ function getLoginHtml(
                         </div>
 
                         <div id="TFAVerification"> 
-                            <input type="text" id="tfa1">
-                            <input type="text" id="tfa2">
-                            <input type="text" id="tfa3">
-                            <input type="text" id="tfa4">
-                            <input type="text" id="tfa5">
+                            <input class="tfaip" type="text" id="tfa1">
+                            <input class="tfaip" type="text" id="tfa2">
+                            <input class="tfaip" type="text" id="tfa3">
+                            <input class="tfaip" type="text" id="tfa4">
+                            <input class="tfaip" type="text" id="tfa5">
+                            <button id="submit2FA">SUBMIT</button>
                         </div> 
 
                         <div class="textFooter">

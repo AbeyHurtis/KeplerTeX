@@ -207,4 +207,26 @@ button:hover {
     transform: translateX(-5px); /* subtle movement */
 }
 
+#submit2FA{
+    height: 45px;
+    width: 200px;
+    border-radius: 6px;
+    border: none;
+    background-color: #0e0d0d;
+    margin-top: 10px;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
 
+#submit2FA:hover, #submitSignupForm:hover {
+    background-color: #333;
+    transform: scale(1.05);
+}
+
+.tfaip{
+    height: 30px;
+    width: 30px;
+    margin-left: 3px;
+}
