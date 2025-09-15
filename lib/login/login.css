@@ -88,7 +88,7 @@ button:hover {
     background-color: #0e0d0d;
 }
 
-#TFAVerification { 
+/* #TFAVerification { 
     display: none;
     justify-content: center;
     display: flex;
@@ -96,8 +96,8 @@ button:hover {
 }
 
 #TFAVerification.acitve { 
-    display: flex;
-}
+    display: none;
+} */
 
 #passwordRequirement {
     margin-top: 35px; 

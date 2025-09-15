@@ -4,20 +4,32 @@ import { renderPreview } from './preview';
 import { sendToServer } from './compilerService';
 import { checkLogin } from './loginService';
 
-function renderWithProgress(context: vscode.ExtensionContext, document: vscode.TextDocument, hasBibFile: boolean|undefined) {
+function renderWithProgress(context: vscode.ExtensionContext,
+	document: vscode.TextDocument,
+	hasBibFile: boolean | undefined,
+	texCached: { value: string | undefined }) {
 	const texRaw = document.getText();
+	
+	if (texRaw === texCached.value) {
+		console.log("texCached : ", texCached);
+		vscode.window.showInformationMessage('No change in source code');
+		return;
+	}
 	vscode.window.withProgress({
 		location: vscode.ProgressLocation.Notification,
 		title: "Compiling",
 		cancellable: true
 	}, async (progress, token) => {
 		progress.report({ increment: 0 });
-
-		if (token.isCancellationRequested){ return; };
-
-		const pdfBufferReturn = await sendToServer(context, texRaw,document.fileName);
+		
+		if (token.isCancellationRequested) { return; };
+		
+		console.log("texRaw before compile: ", texRaw);
+		const pdfBufferReturn = await sendToServer(context, texRaw, document.fileName);
 		if (!token.isCancellationRequested && pdfBufferReturn) {
+			console.log("rendering.....")
 			renderPreview(context, pdfBufferReturn);
+			texCached.value = texRaw;
 			progress.report({ increment: 100, message: "Done" });
 		}
 	});
@@ -28,6 +40,7 @@ export function activate(context: vscode.ExtensionContext) {
 	let hasBibFile: boolean | undefined = undefined; // undefined until first computation
 	let bibWarningShown = false; // track if we already warned
 	const token = undefined;
+	let texCached = { value: undefined as string | undefined };
 
 	const startRenderCmd = vscode.commands.registerCommand('keplertex.startRender', async () => {
 
@@ -58,7 +71,8 @@ export function activate(context: vscode.ExtensionContext) {
 				const token = await renderLogin(context);
 				loggedIn = true;
 				if (token) {
-					renderWithProgress(context, document, hasBibFile);
+					console.log("First Login tex Cached : ", texCached);
+					renderWithProgress(context, document, hasBibFile, texCached);
 					initiated = true;
 				}
 				if (!token) {
@@ -66,14 +80,15 @@ export function activate(context: vscode.ExtensionContext) {
 					return;
 				}
 			}
-			if(loggedIn){
-				renderWithProgress(context, document, hasBibFile);
+			if (loggedIn) {
+				console.log("loggedin tex Cached : ", texCached);
+				renderWithProgress(context, document, hasBibFile, texCached);
 				initiated = true;
 			}
 		}
 	});
 	vscode.workspace.onDidSaveTextDocument(async (document) => {
-		if (initiated && (document.languageId !== 'latex' || !document.fileName.endsWith('.tex'))){ return; };
+		if (initiated && (document.languageId !== 'latex' || !document.fileName.endsWith('.tex'))) { return; };
 		// Check login before compilation
 		let loggedIn = await checkLogin(context);
 		if (!loggedIn) {
@@ -87,7 +102,7 @@ export function activate(context: vscode.ExtensionContext) {
 		}
 
 		if (loggedIn) {
-			renderWithProgress(context, document, hasBibFile);
+			renderWithProgress(context, document, hasBibFile, texCached);
 		}
 	});
 
