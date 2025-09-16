@@ -2,7 +2,7 @@
   "name": "keplertex",
   "displayName": "keplertex",
   "description": "Compile your latex code, no local installations, write your LaTeX code, and compile instantly.",
-  "version": "0.1.7",
+  "version": "0.2.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/AbeyHurtis/keplertex"
