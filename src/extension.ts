@@ -11,7 +11,6 @@ function renderWithProgress(context: vscode.ExtensionContext,
 	const texRaw = document.getText();
 	
 	if (texRaw === texCached.value) {
-		console.log("texCached : ", texCached);
 		vscode.window.showInformationMessage('No change in source code');
 		return;
 	}
@@ -24,10 +23,9 @@ function renderWithProgress(context: vscode.ExtensionContext,
 		
 		if (token.isCancellationRequested) { return; };
 		
-		console.log("texRaw before compile: ", texRaw);
 		const pdfBufferReturn = await sendToServer(context, texRaw, document.fileName);
+		
 		if (!token.isCancellationRequested && pdfBufferReturn) {
-			console.log("rendering.....")
 			renderPreview(context, pdfBufferReturn);
 			texCached.value = texRaw;
 			progress.report({ increment: 100, message: "Done" });
@@ -71,7 +69,6 @@ export function activate(context: vscode.ExtensionContext) {
 				const token = await renderLogin(context);
 				loggedIn = true;
 				if (token) {
-					console.log("First Login tex Cached : ", texCached);
 					renderWithProgress(context, document, hasBibFile, texCached);
 					initiated = true;
 				}
@@ -81,7 +78,6 @@ export function activate(context: vscode.ExtensionContext) {
 				}
 			}
 			if (loggedIn) {
-				console.log("loggedin tex Cached : ", texCached);
 				renderWithProgress(context, document, hasBibFile, texCached);
 				initiated = true;
 			}

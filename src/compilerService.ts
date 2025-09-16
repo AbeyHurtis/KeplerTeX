@@ -7,40 +7,59 @@ import * as vscode from 'vscode';
 
 
 
+// function getBibFilesFromText(texRaw: string): string[] {
+//     const bibFiles: string[] = [];
+
+//     // Check source with \bibliography{} 
+//     const bibRegex = /^(?!\s*%).*\\bibliography\{([^}]+)\}/gm;
+//     const bibMatch = texRaw.match(bibRegex);
+//     if (bibMatch) {
+//         const files = bibMatch[1].split(',').map(f => f.trim());
+//         bibFiles.push(...files.map(f => f.endsWith('.bib') ? f : `${f}.bib`));
+//     }
+    
+//     //check source with \addbibresource{}
+//     // const addBibMatch = texRaw.matchAll(/\\addbibresource\{([^}]+)\}/g); 
+//     // console.log("add bib match : ",addBibMatch);
+//     // if(addBibMatch){
+//     //     vscode.window.showWarningMessage("Please replace \\addbibresource with \\bibliograph, biber support not supported yet");
+//     //     return [];
+//     // }
+//     // for (const match of addBibMatch) {
+//     //     bibFiles.push(match[1].trim());
+//     // }
+
+//     return bibFiles; 
+// }
+
 function getBibFilesFromText(texRaw: string): string[] {
     const bibFiles: string[] = [];
 
-    // Check source with \bibliography{} 
-    const bibRegex = /^(?!\s*%).*\\bibliography\{([^}]+)\}/gm;
-    const bibMatch = texRaw.match(bibRegex);
-    if (bibMatch) {
-        const files = bibMatch[1].split(',').map(f => f.trim());
+    // Match \bibliography{file1,file2}
+    const bibRegex = /\\bibliography\{([^}]+)\}/g;
+    let match: RegExpExecArray | null;
+
+    while ((match = bibRegex.exec(texRaw)) !== null) {
+        const files = match[1].split(',').map(f => f.trim());
         bibFiles.push(...files.map(f => f.endsWith('.bib') ? f : `${f}.bib`));
     }
-    
-    //check source with \addbibresource{}
-    // const addBibMatch = texRaw.matchAll(/\\addbibresource\{([^}]+)\}/g); 
-    // console.log("add bib match : ",addBibMatch);
-    // if(addBibMatch){
-    //     vscode.window.showWarningMessage("Please replace \\addbibresource with \\bibliograph, biber support not supported yet");
-    //     return [];
-    // }
-    // for (const match of addBibMatch) {
-    //     bibFiles.push(match[1].trim());
-    // }
-
-    return bibFiles; 
+    return bibFiles;
 }
+
 
 
 export async function sendToServer(context: vscode.ExtensionContext, texRaw: string, fileName: string, onProgress?: (percent: number) => void): Promise<Buffer | undefined> {
     try {
+        // Remove commented lines from tex files 
+        texRaw = texRaw.split("\n").filter(line => !line.trim().startsWith("%")).join("\n");
+
         const tokenObject = await context.globalState.get<any>('authToken');
         const token = typeof tokenObject === 'string' ? tokenObject : tokenObject?.S;
         
         const form = new FormData();
 
         const bibFiles = getBibFilesFromText(texRaw);
+
 
         if(bibFiles.length > 0){
 
