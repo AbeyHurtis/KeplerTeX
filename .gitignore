@@ -5,3 +5,4 @@ syntax
 .vscode-test/
 *.vsix
 .env
+KeplerTex-Demo
