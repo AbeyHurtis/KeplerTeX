@@ -20,7 +20,10 @@ export async function emailSignup(username: string, email: string, password: str
         body: JSON.stringify({ username, email, password })
     });
     const data = await res.json();
-    if (!res.ok) throw new Error(data.error || 'Signup failed');
+    if (!res.ok){ 
+        throw new Error(data.error || 'Signup failed');
+
+    };
     return data.token;
 }
 
@@ -31,15 +34,20 @@ export async function emailLogin(username: string, password: string) {
         body: JSON.stringify({ username, password })
     });
     const data = await res.json();
-    if (!res.ok) throw new Error(data.error || 'Login failed');
+    if (!res.ok) {
+        throw new Error(data.error || 'Login failed');
+
+    };
     return data.token;
 }
 
 // -------------------- GITHUB OAUTH --------------------
 export async function githubLoginOrSignup(context: vscode.ExtensionContext, isSignup: boolean = false) {
 
-    // const githubSession = await vscode.authentication.getSession('github', ['read:user', 'user:email'], { createIfNone: true });
-    const githubSession = await vscode.authentication.getSession("github", ['read:user', 'user:email'], { forceNewSession: true });
+    // const githubSession = await vscode.authentication.getSession('github', 
+    // ['read:user', 'user:email'], { createIfNone: true });
+    const githubSession = await vscode.authentication.getSession("github", ['read:user', 'user:email'],
+         { forceNewSession: true });
 
     if (!githubSession) {
         vscode.window.showErrorMessage('GitHub authentication failed');
@@ -79,13 +87,13 @@ export async function checkLogin(context: vscode.ExtensionContext) {
     const tokenObject = await context.globalState.get<any>('authToken');
     const token = typeof tokenObject === 'string' ? tokenObject : tokenObject?.S;
 
-    if (!token) return false;
+    if (!token){ return false;};
 
     const res = await fetch(`${LAMBDA_BASE_URL}/checklogin`, {
         method: 'GET',
         headers: { Authorization: token }
     });
-    if (!res.ok) return false;
+    if (!res.ok){return false;};
 
     return true;
 }
@@ -96,12 +104,12 @@ export async function promptLogin(context: vscode.ExtensionContext) {
         ['Email/Password', 'GitHub OAuth'],
         { placeHolder: 'Choose login method' }
     );
-    if (!choice) return null;
+    if (!choice) {return null;};
 
     if (choice === 'Email/Password') {
         const email = await vscode.window.showInputBox({ prompt: 'Email' });
         const password = await vscode.window.showInputBox({ prompt: 'Password', password: true });
-        if (!email || !password) return null;
+        if (!email || !password) {return null;};
 
         try {
             const token = await emailLogin(email, password);
@@ -224,7 +232,7 @@ export function renderLogin(context: vscode.ExtensionContext): Promise<string | 
                     break;
             }
         });
-    })
+    });
 
 }
 
@@ -233,7 +241,9 @@ export async function checkUsername(username: string) {
         method: 'GET'
     });
     const data = await res.json();
-    if (!res.ok) throw new Error(data.error || "Username check failed");
+    if (!res.ok) {
+        throw new Error(data.error || "Username check failed");
+    };
     return data.exists;
 }
 
@@ -328,5 +338,5 @@ function getLoginHtml(
                 </div>
             </body>
         </html>
-    `
+    `;
 }

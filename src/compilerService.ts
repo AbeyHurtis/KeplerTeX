@@ -108,7 +108,12 @@ export async function sendToServer(context: vscode.ExtensionContext, texRaw: str
 
         if (!response.ok) {
             const errorText = await response.text();
-            vscode.window.showErrorMessage(`Failed to Compile: ${errorText}`);
+            if(response.status === 429){
+                vscode.window.showInformationMessage(`Daily Limit exceeded, Please upgraded to a Pro Account. Thank you!`);
+            }
+            else{
+                vscode.window.showErrorMessage(`Failed to Compile: ${errorText}`);
+            }
             return;
         }
 
