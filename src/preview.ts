@@ -29,7 +29,7 @@ export function renderPreview(context: vscode.ExtensionContext, pdfBuffer?: Uint
         vscode.ViewColumn.Two,
         {
             enableScripts: true,
-            retainContextWhenHidden: true,
+            retainContextWhenHidden: false,
             localResourceRoots: [
                 vscode.Uri.joinPath(context.extensionUri, 'lib')
             ]
