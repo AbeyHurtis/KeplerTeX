@@ -12,33 +12,39 @@ function getNonce() {
 }
 
 
-export function renderPreview(context: vscode.ExtensionContext,pdfBuffer?: Uint8Array | Buffer) {
-    if (!panel) {
-
-        panel = vscode.window.createWebviewPanel(
-            'pdfPreview',
-            'PDF Preview',
-            vscode.ViewColumn.Two,
-            {
-                enableScripts: true,
-                retainContextWhenHidden: true,
-                localResourceRoots: [
-                    vscode.Uri.joinPath(context.extensionUri, 'lib')
-                ]
-            }
-        );
-
-        panel.onDidDispose(() => {
-           panel = undefined;
-       });
-
-       panel.onDidChangeViewState(e => {
-            if (!e.webviewPanel.visible) {
-            panel?.webview.postMessage({type: 'clearZoomScale'});
-       }});
-
-
+export function renderPreview(context: vscode.ExtensionContext, pdfBuffer?: Uint8Array | Buffer) {
+    // Dispose old panel before render. 
+    if (panel) {
+        try {
+            panel.dispose();
+        } catch (err) {
+            console.error("Error disposing old panel:", err);
+        }
+        panel = undefined;
     }
+
+    panel = vscode.window.createWebviewPanel(
+        'pdfPreview',
+        'PDF Preview',
+        vscode.ViewColumn.Two,
+        {
+            enableScripts: true,
+            retainContextWhenHidden: true,
+            localResourceRoots: [
+                vscode.Uri.joinPath(context.extensionUri, 'lib')
+            ]
+        }
+    );
+
+    panel.onDidDispose(() => {
+        panel = undefined;
+    });
+
+    panel.onDidChangeViewState(e => {
+        if (!e.webviewPanel.visible) {
+            panel?.webview.postMessage({ type: 'clearZoomScale' });
+        }
+    });
 
 
     // const pdfPath = path.join(context.extensionPath, 'lib', 'tm2.pdf');
@@ -74,7 +80,7 @@ export function renderPreview(context: vscode.ExtensionContext,pdfBuffer?: Uint8
 
     if (pdfBuffer) {
         const base64Pdf = Buffer.from(pdfBuffer).toString('base64');
-        panel.webview.postMessage({type: 'pdfData', data: base64Pdf});
+        panel.webview.postMessage({ type: 'pdfData', data: base64Pdf });
     }
 
 }
@@ -86,7 +92,7 @@ function getWebviewHtml(
     pdfJsUri: vscode.Uri,
     workerUri: vscode.Uri,
     // pdfFileUri: vscode.Uri,
-    downloadIconUri: vscode.Uri, 
+    downloadIconUri: vscode.Uri,
     renderUri: vscode.Uri,
     renderCSSUri: vscode.Uri
 ) {
