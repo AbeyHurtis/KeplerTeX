@@ -35,6 +35,58 @@ canvas {
     display: flex;
 }
 
+#pauseIndicator{
+    
+    position: absolute; 
+    left: 15px;
+    
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    background-color: #892aeede;
+    height: 40px;
+    width: 100px;
+    
+    border-radius: 5px;
+    padding: 0 10px;
+    color: white;
+    font-size: 14px;
+    white-space: nowrap;
+
+    transition: ease 0.2ms;
+}
+
+#pauseIndicator:hover{
+    cursor: pointer;
+    transform: scale(1.02);
+}
+
+#pauseIndicator.active{
+    background-color: #d94545;
+}
+
+#pauseIndicator::after{
+    content: "Ctrl + k";
+    position: absolute;
+    bottom: -30px;
+    right: 50%;
+    transform: translateX(50%);
+    background: #000;
+    color: #fff;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease-in-out;
+}
+
+#pauseIndicator:hover::after {
+    opacity: 1;
+}
+
 #pageIndicator {
     position: center;
     justify-content: center;

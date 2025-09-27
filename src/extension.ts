@@ -39,6 +39,7 @@ export function activate(context: vscode.ExtensionContext) {
 	let bibWarningShown = false; // track if we already warned
 	const token = undefined;
 	let texCached = { value: undefined as string | undefined };
+	let pauseState = false; 
 
 	const startRenderCmd = vscode.commands.registerCommand('keplertex.startRender', async () => {
 
@@ -53,7 +54,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 		if (!initiated && (document.languageId === 'latex' && document.fileName.endsWith('.tex'))) {
 			// check login window , remove the comment when needed
-			await context.globalState.update("authToken", undefined);
+			// await context.globalState.update("authToken", undefined);
 
 			// const dir = path.dirname(document.fileName);
 			// const files = fs.readdirSync(dir);
@@ -69,7 +70,6 @@ export function activate(context: vscode.ExtensionContext) {
 				const token = await renderLogin(context);
 				loggedIn = true;
 				if (token) {
-					renderWithProgress(context, document, hasBibFile, texCached);
 					initiated = true;
 				}
 				if (!token) {
@@ -77,7 +77,7 @@ export function activate(context: vscode.ExtensionContext) {
 					return;
 				}
 			}
-			if (loggedIn) {
+			if (loggedIn && !pauseState) {
 				renderWithProgress(context, document, hasBibFile, texCached);
 				initiated = true;
 			}
@@ -97,7 +97,7 @@ export function activate(context: vscode.ExtensionContext) {
 			loggedIn = true;
 		}
 
-		if (loggedIn) {
+		if (loggedIn && !pauseState) {
 			renderWithProgress(context, document, hasBibFile, texCached);
 		}
 	});

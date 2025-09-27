@@ -82,6 +82,18 @@ export function renderPreview(context: vscode.ExtensionContext, pdfBuffer?: Uint
         const base64Pdf = Buffer.from(pdfBuffer).toString('base64');
         panel.webview.postMessage({ type: 'pdfData', data: base64Pdf });
     }
+    // Pause / UnPause compiler
+    // let pauseState = false; 
+    // webview.onDidReceiveMessage(async message=> {
+    //     switch (message.command){
+    //         case 'pauseState': 
+    //             pauseState = message.data; 
+
+    //             if (pauseState === true){
+
+    //             }
+    //     }
+    // });
 
 }
 
@@ -125,7 +137,9 @@ function getWebviewHtml(
             </script>
 
             <script type="module" src="${renderUri}"></script>
-            <div id="toolbar"> 
+
+            <div id="toolbar">
+                <div id="pauseIndicator">Pause Compiler</div>
                 <div id="pageIndicator">
                     <input type="text" id="currentPageIndicator">
                     <span id="totalPages"></span>
@@ -133,9 +147,9 @@ function getWebviewHtml(
                 <div  id="downloadButton">
                     <img src="${downloadIconUri}" height=30 width=30>
                 </div>
-            </div> 
-            <div id="canvasContainer"> 
             </div>
+
+            <div id="canvasContainer"></div>
         </body>
     </html>
   `;
