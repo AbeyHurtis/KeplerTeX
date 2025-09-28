@@ -12,7 +12,24 @@ function getNonce() {
 }
 
 
-export function renderPreview(context: vscode.ExtensionContext, pdfBuffer?: Uint8Array | Buffer) {
+export function renderPreview(context: vscode.ExtensionContext, 
+    pdfBuffer?: Uint8Array | Buffer | undefined, 
+    pauseState?: boolean | undefined) {
+    
+    console.log("Pause state from preview.ts: ", pauseState);
+    if(pauseState!==undefined){
+            pauseState = !pauseState;
+            context.globalState.update('pauseState', pauseState);
+            if(panel){
+                console.log("Panel before updatePauseUI message")
+                panel.webview.postMessage({
+                        type: 'updatePauseUI',
+                        value: pauseState
+                    });
+            }
+            return; 
+    }
+
     // Dispose old panel before render. 
     if (panel) {
         try {
@@ -82,19 +99,14 @@ export function renderPreview(context: vscode.ExtensionContext, pdfBuffer?: Uint
         const base64Pdf = Buffer.from(pdfBuffer).toString('base64');
         panel.webview.postMessage({ type: 'pdfData', data: base64Pdf });
     }
-    // Pause / UnPause compiler
-    // let pauseState = false; 
-    // webview.onDidReceiveMessage(async message=> {
-    //     switch (message.command){
-    //         case 'pauseState': 
-    //             pauseState = message.data; 
+    // Check messges from rendering
+    panel.webview.onDidReceiveMessage(message => {
+        if(message.type === 'pauseState'){
+            context.globalState.update('pauseState', message.value);
+        }
+    });
 
-    //             if (pauseState === true){
-
-    //             }
-    //     }
-    // });
-
+    return panel; 
 }
 
 
