@@ -17,8 +17,6 @@ export function renderPreview(context: vscode.ExtensionContext,
     pauseState?: boolean | undefined) {
     
     if(pauseState!==undefined){
-            pauseState = !pauseState;
-            context.globalState.update('pauseState', pauseState);
             if(panel){
                 panel.webview.postMessage({
                         type: 'updatePauseUI',

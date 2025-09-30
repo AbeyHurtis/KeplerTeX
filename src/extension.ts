@@ -14,6 +14,7 @@ function renderWithProgress(context: vscode.ExtensionContext,
 
 	if(pauseState!==undefined){
 		renderPreview(context, undefined, pauseState);
+		return; 
 	}
 
 	if (texRaw === texCached.value) {
@@ -46,7 +47,7 @@ export function activate(context: vscode.ExtensionContext) {
 	let bibWarningShown = false; // track if we already warned
 	const token = undefined;
 	let texCached = { value: undefined as string | undefined };
-	context.globalState.update('pauseState', true);
+	context.globalState.update('pauseState', false);
 
 	const startRenderCmd = vscode.commands.registerCommand('keplertex.startRender', async () => {
 
@@ -71,6 +72,9 @@ export function activate(context: vscode.ExtensionContext) {
 				}
 			}
 			if (loggedIn) {
+				const currentPause = context.globalState.get('pauseState') as boolean;
+				const pauseState = !currentPause;
+				context.globalState.update('pauseState', pauseState);
 				renderWithProgress(context, document, hasBibFile, texCached, 
 					context.globalState.get('pauseState'));
 				// initiated = true;
