@@ -98,7 +98,6 @@ export async function sendToServer(context: vscode.ExtensionContext, texRaw: str
             headers.Authorization = token.toString();
         }
 
-
         const compileURL = 'https://jnlyosvinbj4ebypmosfqgdvha0fkhzo.lambda-url.us-east-2.on.aws/compile';
         const response = await fetch(compileURL, {
             method: 'POST',

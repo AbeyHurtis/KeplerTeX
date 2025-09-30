@@ -66,7 +66,7 @@ export async function githubLoginOrSignup(context: vscode.ExtensionContext, isSi
     const data = await res.json();
 
     if (!res.ok) {
-        const path = '/signup/github'
+        const path = '/signup/github';
         const res = await fetch(`${LAMBDA_BASE_URL}${path}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },

@@ -12,7 +12,24 @@ function getNonce() {
 }
 
 
-export function renderPreview(context: vscode.ExtensionContext, pdfBuffer?: Uint8Array | Buffer) {
+export function renderPreview(context: vscode.ExtensionContext, 
+    pdfBuffer?: Uint8Array | Buffer | undefined, 
+    pauseState?: boolean | undefined) {
+    
+    console.log("Pause state from preview.ts: ", pauseState);
+    if(pauseState!==undefined){
+            pauseState = !pauseState;
+            context.globalState.update('pauseState', pauseState);
+            if(panel){
+                console.log("Panel before updatePauseUI message")
+                panel.webview.postMessage({
+                        type: 'updatePauseUI',
+                        value: pauseState
+                    });
+            }
+            return; 
+    }
+
     // Dispose old panel before render. 
     if (panel) {
         try {
@@ -82,7 +99,14 @@ export function renderPreview(context: vscode.ExtensionContext, pdfBuffer?: Uint
         const base64Pdf = Buffer.from(pdfBuffer).toString('base64');
         panel.webview.postMessage({ type: 'pdfData', data: base64Pdf });
     }
+    // Check messges from rendering
+    panel.webview.onDidReceiveMessage(message => {
+        if(message.type === 'pauseState'){
+            context.globalState.update('pauseState', message.value);
+        }
+    });
 
+    return panel; 
 }
 
 
@@ -125,7 +149,9 @@ function getWebviewHtml(
             </script>
 
             <script type="module" src="${renderUri}"></script>
-            <div id="toolbar"> 
+
+            <div id="toolbar">
+                <div id="pauseIndicator">Pause Compiler</div>
                 <div id="pageIndicator">
                     <input type="text" id="currentPageIndicator">
                     <span id="totalPages"></span>
@@ -133,9 +159,9 @@ function getWebviewHtml(
                 <div  id="downloadButton">
                     <img src="${downloadIconUri}" height=30 width=30>
                 </div>
-            </div> 
-            <div id="canvasContainer"> 
             </div>
+
+            <div id="canvasContainer"></div>
         </body>
     </html>
   `;
