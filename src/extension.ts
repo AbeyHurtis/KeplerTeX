@@ -32,7 +32,6 @@ function renderWithProgress(context: vscode.ExtensionContext,
 		if (!token.isCancellationRequested) {
 			const pdfBufferReturn = await sendToServer(context, texRaw, document.fileName);
 			if(pdfBufferReturn){
-				console.log("pdfBufferReturn");
 				renderPreview(context, pdfBufferReturn, pauseState);
 				texCached.value = texRaw;
 				progress.report({ increment: 100, message: "Done" });
@@ -51,7 +50,6 @@ export function activate(context: vscode.ExtensionContext) {
 
 	const startRenderCmd = vscode.commands.registerCommand('keplertex.startRender', async () => {
 
-		console.log("ctrl + k trigger");
 		const editor = vscode.window.activeTextEditor;
 		if (!editor) {
 			vscode.window.showErrorMessage('No Active editor found');
@@ -60,13 +58,9 @@ export function activate(context: vscode.ExtensionContext) {
 		const document = editor.document;
 		const token = undefined;
 
-		console.log("ctrl + k update pauseChange : ", 
-			context.globalState.get('pauseState'));
-
 		if ((document.languageId === 'latex' && document.fileName.endsWith('.tex'))) {
 			// check login window , remove the comment when needed
 			// await context.globalState.update("authToken", undefined);
-			console.log("Before login");
 			let loggedIn = await checkLogin(context);
 			if (!loggedIn) {
 				const token = await renderLogin(context);
@@ -77,7 +71,6 @@ export function activate(context: vscode.ExtensionContext) {
 				}
 			}
 			if (loggedIn) {
-				console.log("logged in ");
 				renderWithProgress(context, document, hasBibFile, texCached, 
 					context.globalState.get('pauseState'));
 				// initiated = true;

@@ -16,12 +16,10 @@ export function renderPreview(context: vscode.ExtensionContext,
     pdfBuffer?: Uint8Array | Buffer | undefined, 
     pauseState?: boolean | undefined) {
     
-    console.log("Pause state from preview.ts: ", pauseState);
     if(pauseState!==undefined){
             pauseState = !pauseState;
             context.globalState.update('pauseState', pauseState);
             if(panel){
-                console.log("Panel before updatePauseUI message")
                 panel.webview.postMessage({
                         type: 'updatePauseUI',
                         value: pauseState
