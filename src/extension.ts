@@ -48,9 +48,9 @@ export function activate(context: vscode.ExtensionContext) {
 	const token = undefined;
 	let texCached = { value: undefined as string | undefined };
 	context.globalState.update('pauseState', false);
+	let initialRender = true; 
 
 	const startRenderCmd = vscode.commands.registerCommand('keplertex.startRender', async () => {
-
 		const editor = vscode.window.activeTextEditor;
 		if (!editor) {
 			vscode.window.showErrorMessage('No Active editor found');
@@ -70,8 +70,14 @@ export function activate(context: vscode.ExtensionContext) {
 					vscode.window.showErrorMessage('Login required to start the compiler');
 					return;
 				}
+				renderWithProgress(context, document, hasBibFile, texCached);
 			}
 			if (loggedIn) {
+				if(initialRender===true){
+					initialRender = false; 
+					renderWithProgress(context, document, hasBibFile, texCached);
+					return; 
+				}
 				const currentPause = context.globalState.get('pauseState') as boolean;
 				const pauseState = !currentPause;
 				context.globalState.update('pauseState', pauseState);
@@ -97,6 +103,9 @@ export function activate(context: vscode.ExtensionContext) {
 
 		if (loggedIn && !(context.globalState.get('pauseState') === true)) {
 			renderWithProgress(context, document, hasBibFile, texCached);
+			if(initialRender===true){
+					initialRender = false; 
+			}
 		}
 	});
 
