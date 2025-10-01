@@ -14,15 +14,18 @@ Simply log in, write your LaTeX code, and compile instantly.
 ## How to Use
 
 1. Open a `.tex` file in VS Code.
-2. Press `Cmd + K` (Mac) or `Ctrl + K` (Windows/Linux).
+2. Press `Cmd + K` (Mac) or `Ctrl + K` (Windows/Linux).  
    This opens the login page for KeplerTeX.
 3. Once logged in, your LaTeX document will compile automatically and the first PDF preview will appear.
 4. After the initial login and compile, use:
 
-   * `Cmd + S` (Mac) or `Ctrl + S` (Windows/Linux)
+   * `Cmd + S` (Mac) or `Ctrl + S` (Windows/Linux)  
      to trigger subsequent compiles and update the preview.
+   * `Cmd + K` (Mac) or `Ctrl + K` (Windows/Linux)  
+     to **pause** the compiler. Press again to **unpause** and resume compiling.
 
 **Tip:** Keep your `.tex` file open while editing. Each save updates the preview without additional setup.
+
 
 ---
 
@@ -92,7 +95,4 @@ If you encounter any issues or have feature requests, please [open an issue](htt
 
 ---
 
-## Release Notes
-
-* Readme updates
 
