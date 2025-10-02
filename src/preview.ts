@@ -26,6 +26,15 @@ export function renderPreview(context: vscode.ExtensionContext,
             return; 
     }
 
+    if( context.globalState.get('pauseState')===true){
+        if(panel){
+            panel.webview.postMessage({
+                type: 'pauseNotification'
+            });
+        }
+        return;
+    }
+
     // Dispose old panel before render. 
     if (panel) {
         try {
@@ -158,6 +167,10 @@ function getWebviewHtml(
             </div>
 
             <div id="canvasContainer"></div>
+            <div id="pauseNotifier">
+                <div id="pauseNotifierText"> Unpause Compiler to Render</div> 
+                <div id="pauseNotifierCloseButton">x</div>
+            </div>
         </body>
     </html>
   `;

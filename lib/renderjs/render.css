@@ -167,3 +167,41 @@ canvas {
     /* box-shadow: 8px 6px 80px 1px #e3e3e3; */
     transform: scale(1.2);
 }
+
+#pauseNotifier {
+    position: absolute;
+    bottom: 20px;
+    right: -500px; 
+    height: 30px;
+    width: 500px;
+
+    border-radius: 5px;
+
+    font-size: 12px;
+    background-color: #020d29;
+    transition: right 0.5s ease-in-out;
+
+    display: flex;
+    align-items: center;           /* vertical centering */
+    justify-content: space-between; /* text left, button right */
+    padding: 0 10px;               /* some spacing inside */
+    box-sizing: border-box;
+}
+
+#pauseNotifier.active { 
+    right: 5px; /* slide into view */
+}
+
+#pauseNotifierText {
+    color: #ffffff;
+    font-size: 15px;
+    flex-grow: 1; /* ensures it sticks to the left */
+    text-align: left;
+}
+
+#pauseNotifierCloseButton {
+    font-size: 16px;
+    color: #bebebf;
+    cursor: pointer;
+    margin-left: 10px;
+}
