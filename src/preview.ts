@@ -48,7 +48,7 @@ export function renderPreview(context: vscode.ExtensionContext,
     panel = vscode.window.createWebviewPanel(
         'pdfPreview',
         'PDF Preview',
-        vscode.ViewColumn.Two,
+        {viewColumn: vscode.ViewColumn.Two, preserveFocus: true},
         {
             enableScripts: true,
             retainContextWhenHidden: false,
@@ -57,6 +57,8 @@ export function renderPreview(context: vscode.ExtensionContext,
             ]
         }
     );
+
+    panel.reveal(undefined, true);
 
     panel.onDidDispose(() => {
         panel = undefined;
