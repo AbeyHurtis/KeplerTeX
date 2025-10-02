@@ -12,7 +12,7 @@ function renderWithProgress(context: vscode.ExtensionContext,
 
 	const texRaw = document.getText();
 
-	if(pauseState!==undefined){
+	if(pauseState!==undefined || context.globalState.get('pauseState')===true){
 		renderPreview(context, undefined, pauseState);
 		return; 
 	}
@@ -101,7 +101,7 @@ export function activate(context: vscode.ExtensionContext) {
 			loggedIn = true;
 		}
 
-		if (loggedIn && !(context.globalState.get('pauseState') === true)) {
+		if (loggedIn) {
 			renderWithProgress(context, document, hasBibFile, texCached);
 			if(initialRender===true){
 					initialRender = false; 
