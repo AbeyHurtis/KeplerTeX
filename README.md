@@ -67,8 +67,8 @@ Save your (`Cmd + S`)(Mac)/(`Ctrl + S`)(Windows/Linux) `.tex` file. Your first P
 
 ## Usage Limits and Plans
 
-* **Free Tier**: Each user has a limit of **150 compilations per day**.
-* **Pro Tier (coming soon)**: For heavy users, a paid plan will increase daily compilation limits (for example, up to 500 per day) and may include additional benefits such as faster queue priority.
+* **Free Tier**: Each user has a limit of **1000 compilations per day**.
+* **Pro Tier (coming soon)**: For heavy users, a paid plan will get unlimited compilations and include additional benefits such as faster queue priority.
 
 **These limits help us manage infrastructure costs while keeping KeplerTeX accessible to everyone.**
 
