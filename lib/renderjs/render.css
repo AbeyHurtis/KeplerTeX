@@ -179,7 +179,7 @@ canvas {
 
     font-size: 12px;
     background-color: #020d29;
-    transition: right 0.5s ease-in-out;
+    transition: right 0.2s ease-in-out;
 
     display: flex;
     align-items: center;           /* vertical centering */
