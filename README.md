@@ -8,7 +8,7 @@ Simply log in, write your LaTeX code, and compile instantly.
 ## Requirement
 
 * An active internet connection.
-
+* vscode version : ^1.100.0
 ---
 
 ## How to Use
