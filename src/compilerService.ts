@@ -47,6 +47,10 @@ function getBibFilesFromText(texRaw: string): string[] {
 }
 
 
+function getImagesFromText(textRaw: string): string[] {
+    return ["_temp"];
+}
+
 
 export async function sendToServer(context: vscode.ExtensionContext, texRaw: string, fileName: string, onProgress?: (percent: number) => void): Promise<Buffer | undefined> {
     try {
