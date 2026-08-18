@@ -90,6 +90,18 @@ These limits help us manage infrastructure costs while keeping KeplerTeX accessi
    npm install
    ```
 
+### Backend Setup
+
+To run the KeplerTeX compilation services locally, you will need to clone and run the backend server.
+
+1. Clone the backend repository:
+   ```bash
+   git clone https://github.com/AbeyHurtis/keplertex-backend.git
+   cd keplertex-backend
+   ```
+2. Follow the setup instructions in the [backend repository](https://github.com/AbeyHurtis/keplertex-backend) to configure the environment and run the server.
+3. Once the local backend server is running, update the server endpoints in `src/compilerService.ts` and `src/loginService.ts` (e.g., pointing to `http://localhost:8000`) to test the extension against your local environment.
+
 ### Building the Extension
 
 * To compile the extension:
